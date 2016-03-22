@@ -105,24 +105,33 @@
 		        		</div>
 		        	</form>
 		        </li>
-        		<li><a href="#settings_dropdown" class="dropdown-button" data-activates="settings_dropdown" data-beloworigin="true" data-hover="true" data-constrainWidth="true"><i class="material-icons">settings</i></a></li>
+        		<li><a href="#!" class="dropdown-button" data-activates="settings_large_dropdown" data-beloworigin="true" data-hover="true" data-constrainWidth="false"><i class="material-icons">settings</i></a></li>
         		<li><a href="#!" class="tooltipped" data-position="bottom" data-tooltip="Logout" data-delay="10"><i class="material-icons">power_settings_new</i></a></li>
       		</ul>
 
       		<!-- Menu Dropdown -->
       		<ul class="right hide-on-large-only">
     			<li><a href="#" id="small_search_a"><i class="material-icons">search</i></a></li>
-    			<li><a href="#" class="dropdown-button" data-activates="settings_dropdown" data-beloworigin="true" data-hover="true" data-constrainWidth="true"><i class="material-icons">settings</i></a></li>
+    			<li><a href="#" class="dropdown-button" data-activates="settings_med_small_dropdown" data-beloworigin="true" data-hover="true" data-constrainWidth="true"><i class="material-icons">settings</i></a></li>
         		<li><a href="#!" class="tooltipped" data-position="bottom" data-tooltip="Logout" data-delay="10"><i class="material-icons">power_settings_new</i></a></li>
   			</ul>
       		<!-- Dropdown menu ends -->
 
-      		<!-- Settings Dropdown -->
-      		<ul id="settings_dropdown" class="dropdown-content">
+      		<!-- Settings Dropdown for Small and Medium Devices-->
+      		<ul id="settings_med_small_dropdown" class="dropdown-content hide-on-large-only">
 	        	<li><a href="#">Add Sub Admin</a></li>
         		<li><a href="#">Company Profile</a></li>
         	</ul>
         	<!-- Settings Dropdown close -->
+
+
+        	<!-- Settings Dropdown for Large Devices-->
+      		<ul id="settings_large_dropdown" class="dropdown-content hide-on-med-and-down">
+	        	<li><a href="#">Add Sub Admin</a></li>
+        		<li><a href="#">Company Profile</a></li>
+        	</ul>
+        	<!-- Settings Dropdown close -->
+
 
    		</div>
 

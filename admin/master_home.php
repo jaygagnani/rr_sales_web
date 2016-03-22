@@ -141,8 +141,10 @@ $(document).ready(function(){
         			alert(error);
         		},
         		success: function (data,status) {
-		            alert(data + " , " + status)
+		            //alert(data + " , " + status)
 	            	fetchCategories();
+	            	$('#category_name').val("");
+					$('#add_category_modal').closeModal();
         		},
         		cache: false,
         		contentType: false,
@@ -158,7 +160,6 @@ $(document).ready(function(){
 			$('#category_name ~ label').html('Please enter Category Name');
 		}
 
-		//$('#add_category_modal').close();
 
 		return true;
 
