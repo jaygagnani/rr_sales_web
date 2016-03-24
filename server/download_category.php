@@ -4,7 +4,7 @@ require './fpdf/fpdf.php';
 
 $db = new DbConnection;
 
-$category_name = $db->getCategoryDetails($_GET['category']);
+$category_name = $db->fetchCategoryDetails($_GET['category']);
 
 $columnNames = json_decode($db->fetchTableColumnNames("product"));
 

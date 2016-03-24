@@ -124,7 +124,7 @@ $(document).ready(function(){
 });
 
 function fetchProducts(){
-	$.getJSON("../server/fetch_products.php?category=<?php echo $_GET['category']; ?>", function(data){
+	$.getJSON("../server/fetch_products.php?category=<?php echo $_SESSION['category_nicename']; ?>", function(data){
 		if(data){
 			var json_data;
 			$.each(data, function(i, product){
@@ -164,10 +164,26 @@ function resetCategoryName(){
 function saveCategoryName(e, cat_name){
 	//var code = (e.keyCode ? e.keyCode : e.which);
 	if(e.keyCode == 13){
-		category_name = $('#category_name').val();
-		cat_name.blur();
-		$('.input-field span').hide(100);
+		if($.trim($('#category_name').val()) == ""){
+			// Do Nothing
+		}else{
+			category_name = $('#category_name').val();
+			updateCategoryNameInDb(category_name);
+			cat_name.blur();
+			$('.input-field span').hide(100);
+		}
 	}
+}
+
+function updateCategoryNameInDb(category_name){
+	$.get("../server/update_category.php?category=<?php echo $_SESSION['category_nicename'] ?>&category_new_name="+category_name,
+		function(data,status){
+			//alert(data+"\n"+status);
+			if(status == "success"){
+				window.location.href="./category_master.php?category=<?php echo $_SESSION['category_nicename']; ?>";
+			}
+		}
+	);
 }
 
 </script>

@@ -185,15 +185,6 @@ function fetchCategories(){
 	});
 }
 
-// function addCategory(){
-// 	$.post("../server/add_category.php",{
-// 		category_name : $("#category_name").val(),
-// 		category_img_file : $("#category_img_file").val()
-// 	},
-// 	function(data, status){
-// 		alert("Data : "+data+"\nStatus : "+status);
-// 	});
-// }
 
 </script>
 

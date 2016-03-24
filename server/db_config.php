@@ -54,8 +54,11 @@ class DbConnection {
 		}
 	}
 
+
+// Helper Methods
+
 	//Image Upload Function
-	function uploadImage($image, $dir){
+	function __uploadImage($image, $dir){
 		if(isset($image)){
 			$errors = array();
 			$file_name = $image['name'];
@@ -93,6 +96,19 @@ class DbConnection {
 			}
 		}
 	}
+
+	function __getNicename($name, $id){
+		$pattern = '/[ .!@#%&_]+/';
+		$nicename = preg_replace($pattern,'_', $name);
+		$pattern = '/\(\w+\)/';
+		$nicename = preg_replace($pattern,'', $nicename);
+
+		$nicename = $nicename.".".$id;
+
+		return $nicename;
+	}
+
+// End Helper Methods
 
 	//User Functions
 		// Login and Registration Functions
@@ -205,7 +221,7 @@ class DbConnection {
 	function addCategory($category_name, $category_img){
 		//upload image
 		if($category_img){
-			$upload_success = $this->uploadImage($category_img, "categories");
+			$upload_success = $this->__uploadImage($category_img, "categories");
 		}else{
 			$upload_success = false;
 		}
@@ -218,12 +234,8 @@ class DbConnection {
 		$result = self::$mysqli->query($sql);
 		if(self::$mysqli->affected_rows == 1){
 			$id = self::$mysqli->insert_id;
-			$pattern = '/[ .!@#%&_]+/';
-			$nicename = preg_replace($pattern,'_', $category_name);
-			$pattern = '/\(\w+\)/';
-			$nicename = preg_replace($pattern,'', $nicename);
-
-			$nicename = $nicename.".".$id;
+			
+			$nicename = $this->__getNicename($category_name, $id);
 
 			$sql = "update ".self::CATEGORY." set category_nicename='".$nicename."' where id=".$id.";";
 			$result = self::$mysqli->query($sql);
@@ -236,12 +248,27 @@ class DbConnection {
 		return self::$mysqli->error;
 	}
 
-	function updateCategory($category_id, $category_name){
-		$sql = "update ".self::CATEGORY." set category_name = '$category_name' where category_id = '$category_id';";
+	function updateCategory($category_nicename, $category_new_name, $category_img){
+
+		$nicename = "";
+
+		$category = $this->fetchCategoryDetails($category_nicename);
+		if($category['id'] < 0)
+			return false;
+
+		$id = $category['id'];
+
+		if($category_img){
+			// Do nothing for now
+		}else{
+			$nicename = $this->__getNicename($category_new_name, $id);
+			$sql = "update ".self::CATEGORY." set category_name = '$category_new_name', category_nicename = '$nicename' where id = $id;";
+		}
+		
 		$result = self::$mysqli->query($sql);
 		
 		if(self::$mysqli->affected_rows == 1){
-			return true;
+			return $nicename;
 		}
 		return false;
 	}
@@ -274,7 +301,7 @@ class DbConnection {
 		return false;
 	}
 
-	function getCategoryDetails($nicename){
+	function fetchCategoryDetails($nicename){
 		$sql = "select id, category_name, category_img, category_nicename from ".self::CATEGORY." where category_nicename='$nicename';";
 		$result = self::$mysqli->query($sql);
 		
@@ -300,12 +327,8 @@ class DbConnection {
 
 		if($result->affected_rows == 1){
 			$id = self::$mysqli->insert_id;
-			$pattern = '/[ .!@#%&_]+/';
-			$nicename = preg_replace($pattern,'_', $product_name);
-			$pattern = '/\(\w+\)/';
-			$nicename = preg_replace($pattern,'', $nicename);
-
-			$nicename = $nicename.".".$id;
+			
+			$nicename = $this->__getNicename($product_name, $id);
 
 			$sql = "UPDATE ".self::PRODUCT." SET product_nicename='$nicename' WHERE id=$id;";
 
@@ -318,7 +341,7 @@ class DbConnection {
 	}
 
 	function fetchProducts($category_nicename){
-		$category = $this->getCategoryDetails($category_nicename);
+		$category = $this->fetchCategoryDetails($category_nicename);
 		if($category['id'] < 0)
 			return false;
 		
@@ -348,7 +371,7 @@ class DbConnection {
 
 
 	function fetchProductsForDownload($category_nicename){
-		$category = $this->getCategoryDetails($category_nicename);
+		$category = $this->fetchCategoryDetails($category_nicename);
 		if($category['id'] < 0)
 			return false;
 		
@@ -378,7 +401,7 @@ class DbConnection {
 
 
 	function fetchProductDetails($category_nicename, $product_nicename){
-		$category = $this->getCategoryDetails($category_nicename);
+		$category = $this->fetchCategoryDetails($category_nicename);
 		$sql = '';
 
 		if(!empty($category_nicename))
@@ -445,7 +468,7 @@ class DbConnection {
 	function fetchSearchResults($category_nicename, $searchParameter){
 		$sql = '';
 		if(!empty($category_nicename)){
-			$category = $this->getCategoryDetails($category_nicename);
+			$category = $this->fetchCategoryDetails($category_nicename);
 			$sql = "SELECT * FROM ".self::PRODUCT." WHERE category_id=$category[id] and product_name LIKE '$searchParameter%' OR product_id LIKE '$searchParameter%' order by product_id";
 		}
 		else
