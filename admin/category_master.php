@@ -43,7 +43,7 @@ $_SESSION['category_nicename'] = $_GET['category'];
 <body>
 
 <?php
-	require_once('../navbar_layout.php');
+	require_once('./navbar_layout.php');
 ?>
 
 <div class="row">
@@ -180,7 +180,8 @@ function updateCategoryNameInDb(category_name){
 		function(data,status){
 			//alert(data+"\n"+status);
 			if(status == "success"){
-				window.location.href="./category_master.php?category=<?php echo $_SESSION['category_nicename']; ?>";
+				alert(data + "\n<?php echo $_SESSION['category_nicename']; ?>");
+				//window.location.href="./category_master.php?category="data;
 			}
 		}
 	);

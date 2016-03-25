@@ -27,7 +27,7 @@
 <body>
 
   <?php
-    require_once('../navbar_layout.php');
+    require_once('./navbar_layout.php');
   ?>
 
       
@@ -37,11 +37,11 @@
       <div class="card">
         <div class="row card-content">
           <center><h5>Add Product</h5></center>
-          <form class="col s12" action="../server/add_product.php" method="POST" >
+          <form class="col s12" action="../server/add_product.php" enctype="multipart/form-data" method="POST" >
             <div class="row">
               <div class="col l3"><br/></div>
               <div class="input-field col s12 l6">
-                <input  id="product_id" type="text" class="validate">
+                <input  id="product_id" type="text" name="product_id" class="validate">
                 <label for="product_id">Product Id</label>
                 <span id="product_id_error" style="display: hidden;">Field cannot be empty</span>
               </div>
@@ -50,7 +50,7 @@
             <div class="row">
               <div class="col l3"><br/></div>
               <div class="input-field col s12 l6">
-                <input id="product_name" type="text" class="validate">
+                <input id="product_name" type="text" name="product_name" class="validate">
                 <label for="product_name">Product Name</label>
                 <span id="product_name_error" style="display: hidden;">Field cannot be empty</span>
               </div>
@@ -59,7 +59,7 @@
             <div class="row">
               <div class="col l3"><br/></div>
               <div class="input-field col s12 l6">
-                <input id="vehicle_name" type="text" class="validate">
+                <input id="vehicle_name" type="text" name="vehicle_name" class="validate">
                 <label for="vehicle_name">Vehicle Name</label>
                 <span id="vehicle_name_error" style="display: hidden;">Field cannot be empty</span>
               </div>
@@ -68,7 +68,7 @@
             <div class="row">
               <div class="col l3"><br/></div>
               <div class="input-field col s12 l6">
-                <input id="product_description" type="text" class="validate">
+                <input id="product_description" type="text" name="product_description" class="validate">
                 <label for="product_description">Product Description</label>
                 <span id="product_description_error" style="display: hidden;">Field cannot be empty</span>
               </div>
@@ -77,7 +77,7 @@
             <div class="row">
               <div class="col l3"><br/></div>
               <div class="input-field col s12 l6">
-                <input id="rate" type="text" class="validate">
+                <input id="rate" type="text" name="rate" class="validate">
                 <label for="rate">Rate</label>
                 <span id="rate_error" style="display: hidden;">Field cannot be empty</span>
               </div>
@@ -86,11 +86,11 @@
             <div class="row">
               <div class="col l3"><br/></div>
               <div class="input-field col s12 l6">
-                <select>
+                <select name="per">
                   <option value="" disabled selected>Choose your option</option>
-                  <option value="1">Each</option>
-                  <option value="2">Set</option>
-                  <option value="3">Kit</option>
+                  <option value="each">Each</option>
+                  <option value="set">Set</option>
+                  <option value="kit">Kit</option>
                 </select>
                 <label>Per</label>
               </div>
@@ -99,7 +99,7 @@
             <div class="row">
               <div class="col l3"><br/></div>
               <div class="input-field col s12 l6">
-                <input id="min_quantity" type="text" class="validate">
+                <input id="min_quantity" type="text" name="min_quantity" class="validate">
                 <label for="min_quantity">Minimum Quantity</label>
                 <span id="min_quantity_error" style="display: hidden;">Field cannot be empty</span>
               </div>
@@ -111,7 +111,7 @@
                 <div class="file-field input-field">
                   <div class="btn">
                     <span>File</span>
-                    <input type="file" multiple>
+                    <input type="file" name="product_img_file">
                   </div>
                   <div class="file-path-wrapper">
                     <input class="file-path validate" type="text" placeholder="Upload one or more files">
@@ -122,7 +122,7 @@
             </div>
             <div class="row">
               <center>
-                <button class="btn waves-effect waves-light" type="submit" name="" onclick="validation();">Submit
+                <button class="btn waves-effect waves-light" type="submit" name="" onclick="return validation();">Submit
                   <i class="material-icons right"></i>
                 </button>
               </center>
@@ -156,6 +156,7 @@ function validation()
   if(pid == null || pid == '')
   {
     $('#product_id_error').show(100);
+    return false;
   }else{
     $('#product_id_error').hide(100);
   }
@@ -164,6 +165,7 @@ function validation()
   if(pname == null || pname == '')
   {
     $('#product_name_error').show(100);
+    return false;
   }else{
     $('#product_name_error').hide(100);
   }
@@ -172,6 +174,7 @@ function validation()
   if(vehicle == null || vehicle == '')
   {
     $('#vehicle_name_error').show(100);
+    return false;
   }else{
     $('#vehicle_name_error').hide(100);
   }
@@ -180,6 +183,7 @@ function validation()
   if(description == null || description == '')
   {
     $('#product_description_error').show(100);
+    return false;
   }else{
     $('#product_description_error').hide(100);
   }
@@ -189,10 +193,12 @@ function validation()
   {
     $('#rate_error').html("Field cannot be empty.");
     $('#rate_error').show(100);
+    return false;
   }else if(!rate.match(/^\d+/))
   {
     $('#rate_error').html("Enetr only number");
     $('#rate_error').show(100);
+    return false;
   }
   else{
     $('#rate_error').hide(100);
@@ -204,10 +210,12 @@ function validation()
   {
     $('min_quantity_error').html("Field cannot be empty");
     $('#min_quantity_error').show(100);
+    return false;
   }else if(!min.match(/^\d+/))
   {
     $('#min_quantity_error').html("Enetr only number");
     $('#min_quantiy_error').show(100);
+    return false;
   }
   else{
     $('#min_quantity_error').hide(100);

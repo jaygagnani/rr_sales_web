@@ -37,7 +37,7 @@ if(!session_id())
 <body>
 
 <?php
-	require_once('../navbar_layout.php');
+	require_once('./navbar_layout.php');
 ?>
 
 

@@ -321,23 +321,51 @@ class DbConnection {
 
 	// Product Functions
 
-	function addProduct($product_id, $product_name, $product_vehicle, $product_rate, $product_per, $product_min_qty, $product_desc){
-		$sql = "INSERT INTO ".self::$PRODUCT." (product_id, product_name,product_vehicle,product_rate,product_per,product_min_qty,product_desc) VALUES ('$product_id', '$product_name', '$product_vehicle', '$product_rate', '$product_per', '$product_min_qty', '$product_desc');";
+	function addProduct($category_nicename, $product_id, $product_name, $product_vehicle, $product_rate, $product_per, $product_min_qty, $product_desc, $product_img){
+
+		$category = $this->fetchCategoryDetails($category_nicename);
+		if($category['id'] < 0)
+			return false;
+
+		$category_id = $category['id'];
+
+
+		//print_r($product_img);
+
+		$upload_success = null;
+
+		if($product_img){
+			$upload_success = $this->__uploadImage($product_img, "products");
+		}else{
+			$upload_success = false;
+		}
+		
+		if($upload_success !== false){
+			$sql = "INSERT INTO ".self::PRODUCT." (category_id,product_id,product_name,product_vehicle,product_rate,product_per,product_min_qty,product_description,product_img) VALUES ('$category_id', '$product_id', '$product_name', '$product_vehicle', '$product_rate', '$product_per', '$product_min_qty', '$product_desc', '$upload_success');";
+		}else{
+			$sql = "INSERT INTO ".self::PRODUCT." (category_id,product_id,product_name,product_vehicle,product_rate,product_per,product_min_qty,product_description) VALUES ('$category_id', '$product_id', '$product_name', '$product_vehicle', '$product_rate', '$product_per', '$product_min_qty', '$product_desc');";
+		}
+		
 		$result = self::$mysqli->query($sql);
+		if(!$result){
+			die("invalid request : ".self::$mysqli->error);
+		}else{
+			if(self::$mysqli->affected_rows == 1){
+				$id = self::$mysqli->insert_id;
+				print_r("id : ".$id);
+				$nicename = $this->__getNicename($product_name, $id);
+				print_r("nicename : ".$nicename);
+				$sql = "UPDATE ".self::PRODUCT." SET product_nicename='$nicename' WHERE id=$id;";
+				$result = self::$mysqli->query($sql);
 
-		if($result->affected_rows == 1){
-			$id = self::$mysqli->insert_id;
-			
-			$nicename = $this->__getNicename($product_name, $id);
-
-			$sql = "UPDATE ".self::PRODUCT." SET product_nicename='$nicename' WHERE id=$id;";
-
-			if($result->affected_rows == 1){
-				return true;
+				if(self::$mysqli->affected_rows == 1){
+					return true;
+				}
 			}
 		}
+		
 
-		return $mysqli->error;
+		return self::$mysqli->error;
 	}
 
 	function fetchProducts($category_nicename){

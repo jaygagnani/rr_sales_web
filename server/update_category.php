@@ -21,7 +21,7 @@ if(isset($_GET['category_new_name'])){
 		$category_nicename = $db->updateCategory($category_nicename, $category_new_name, null);
 		if($category_nicename){
 			$_SESSION['category_nicename'] = $category_nicename;
-			print_r("Category Name Updated Successfully");
+			print_r($_SESSION['category_nicename']);
 		}else{
 			print_r("Sorry! An error occured. Category Name was not updated.");
 		}

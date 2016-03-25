@@ -24,7 +24,7 @@
 <body>
 
 <?php
-	require_once('../navbar_layout.php');
+	require_once('./navbar_layout.php');
 ?>
 
 <div class="row">
