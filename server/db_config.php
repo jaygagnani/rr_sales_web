@@ -112,8 +112,8 @@ class DbConnection {
 
 	//User Functions
 		// Login and Registration Functions
-		function registerNewUser($user_email, $user_name, $user_address, $user_contact_number, $user_role, $user_password){
-			$sql = "insert into ".self::USER." (user_email, user_name, user_address, user_contact_number, user_role, user_password) values ('$user_email','$user_name','$user_address','$user_contact_number','$user_role','$user_password')";
+		function registerNewUser($user_email, $user_name, $user_address, $user_contact_number, $user_password){
+			$sql = "insert into ".self::USER." (user_email, user_name, user_address, user_contact_number, user_role, user_password) values ('$user_email','$user_name','$user_address','$user_contact_number','user','$user_password')";
 			
 			$result = self::$mysqli->query($sql);
 			if(!$result){
@@ -133,7 +133,9 @@ class DbConnection {
 			
 			if($result->num_rows == 1){
 				$row = $result->fetch_row();
-				return $row;
+				return json_encode($row);
+			}else{
+				arr[] = new array("invalid"=>"incvadv")
 			}	
 			return false;
 		}

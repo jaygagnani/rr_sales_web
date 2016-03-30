@@ -1,7 +1,27 @@
 body{
 	word-wrap : break-word;
+	color: #333399;
+}
+
+.container{
+	width: 92%;
 }
 
 .center{
 	text-align: center;
+}
+
+.modal-body label{
+	text-transform: none;
+}
+
+input[type=button],button[type=button],.form-group input[type=button], 
+button[type=button]:hover,button[type=button]:active{
+	background-color: #333399;
+	color: #fff;
+}
+
+.modal-header button[type=button]{
+	background-color: #fff;
+	color: #333399;
 }
