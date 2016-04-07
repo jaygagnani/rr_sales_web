@@ -1,0 +1,86 @@
+html, body{
+	word-wrap : break-word;
+	color: #333399;
+}
+
+.container{
+	width: 92%;
+}
+
+.modal-body label{
+	text-transform: none;
+}
+
+input[type=button],button[type=button],.form-group input[type=button], 
+button[type=button]:hover,button[type=button]:active{
+	background-color: #333399;
+	color: #fff;
+}
+
+.modal-header button[type=button]{
+	background-color: #fff;
+	color: #333399;
+}
+
+
+/* styling for thumbnails list displaying cateories and products */
+
+.display_catalogue{
+	margin-bottom: 50px;
+}
+
+.div_with_bg_img{
+  	background-repeat: no-repeat;
+  	background-size: 100%;
+  	height: 170px;
+  	float: none;
+}
+
+.div_text_item{
+  	background-color: #333399; 
+  	color: #fff; 
+  	position: relative; 
+  	top: 140px; 
+  	height: 30px; 
+  	padding-top: 5px;
+  	padding-left: 10px;
+  	padding-right: 10px;
+}
+
+/* ENDS styling for thumbnails list displaying cateories and products */
+
+/* Pagination styling */
+.pagination>li>a, 
+.pagination>li>span{
+  border: none;
+}
+
+ul.pagination {
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+}
+
+ul.pagination li {display: inline;}
+
+ul.pagination li a {
+    color: black;
+    float: left;
+    padding: 8px 16px;
+    text-decoration: none;
+    transition: background-color .7s;
+}
+
+ul.pagination li a.active {
+    background-color: rgb(235,46,58);
+    color: #ffffff;
+    font-weight: bold;
+}
+
+ul.pagination li a:hover:not(.active) {
+  background-color: rgba(235,46,58,.4);
+  color: rgb(235,46,58);
+  font-weight: bold;
+}
+
+/* ENDS Pagination styling */
