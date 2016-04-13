@@ -67,6 +67,10 @@
 <!-- Loader ends -->
 
 
+<?php include_once('./footer.php'); ?>
+
+
+
 <!-- Scripts Section -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>

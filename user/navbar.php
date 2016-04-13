@@ -1,72 +1,53 @@
-<!DOCTYPE html>
+<?php
 
-<html>
+session_start();
 
-<head>
-
-<!-- meta -->
-	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-<!-- favicon -->
-	<link rel="shortcut icon" type="image/x-icon" href="../images/favicon.ico" />
-
-<!-- Bootstrap CDN CSS -->
-	<link rel="stylesheet" type="text/css" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
-
-<!-- FontAwesome CDN CSS -->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-
+?>
 <!-- ASAP google font css -->
 	<link href='https://fonts.googleapis.com/css?family=Asap:700italic,700,400italic,400' rel='stylesheet' type='text/css'>
 
-<!-- Link custom stylesheets -->
-	<link href="./css/common_styles.css" rel="stylesheet" type="text/css" hreflang="en">
 
-	<style type="text/css">
+<style type="text/css">
 
-		*{
-			font-family: 'Asap', sans-serif;
-		}
+	*{
+		font-family: 'Asap', sans-serif;
+	}
 
-		body{
-			text-transform: uppercase;
-		}
+	nav>*{
+		text-transform: uppercase;
+	}
 
-		.icon-bar{
-			background-color: #000;
-		}
+	navbar>.icon-bar{
+		background-color: #000;
+	}
 
-		[class*="col-"]{
-			padding: 5px;
-		}
+	[class*="col-"]{
+		padding: 5px;
+	}
 
 
-		::-webkit-input-placeholder { /* WebKit, Blink, Edge */
-    		font-style: italic;
-		}
+	::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    	font-style: italic;
+	}
 		
-		:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-   			font-style: italic;
-		}
+	:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   		font-style: italic;
+	}
 		
-		::-moz-placeholder { /* Mozilla Firefox 19+ */
-   			font-style: italic;
-		}
+	::-moz-placeholder { /* Mozilla Firefox 19+ */
+   		font-style: italic;
+	}
 
-		:-ms-input-placeholder { /* Internet Explorer 10-11 */
-   			font-style: italic;
-		}
+	:-ms-input-placeholder { /* Internet Explorer 10-11 */
+   		font-style: italic;
+	}
 
-		a{
-			color: #333399;
-		}
+	a{
+		color: #333399;
+	}
 
+</style>
 
-	</style>
-
-</head>
-
-<body>
 
 <nav class="navbar">
 	<div class="container" style="width: 92%;">
@@ -106,13 +87,50 @@
 						<li class="col-lg-1 col-md-1">
 						</li>
 						<li class="col-lg-1.5 col-md-1.5" style="text-align: right;">
-							<a href="#!" data-toggle="modal" data-target="#signInModal"><b><span class="glyphicon glyphicon-user"> Sign in</span></b></a>
+							
+							<?php 
+								if(!isset($_SESSION['user'])){
+
+							?>
+									<a href="#!" data-toggle="modal" data-target="#signInModal"><b><span class="fa fa-user">&nbsp; Sign in</span></b></a>
+							<?php
+								}
+								else{
+							?>
+
+								<a href="../server/destroy_session.php" id="signout-link"><b><span class="fa fa-unlock">&nbsp; Sign out</span></b></a>	
+
+								<script type="text/javascript">
+									// $("#signout-link").on("click", function(){
+									// 	$.ajax({
+									// 		url: "../server/"
+									// 	})
+									// });
+								</script>
+
+							<?php
+								}
+
+							?>
+
 						</li>
 						<li class="col-lg-1.5 col-md-1.5" style="text-align: right;">
-							<a href="#"><b><span class="glyphicon glyphicon-earphone"> Contact</span></b></a>
+							<a href="#"><b><span class="fa fa-phone">&nbsp; Contact</span></b></a>
 						</li>
 						<li class="col-lg-1.5 col-md-1.5" style="text-align: right;">
-							<a href="#"><b><span class="glyphicon glyphicon-shopping-cart"> Cart</span></b></a>
+							<a href="#"><b><span class="fa fa-shopping-cart">&nbsp; Cart</span></b></a>
+						</li>
+
+						<li>
+							<?php
+								if(isset($_SESSION['user'])){
+							?>
+
+									<a href="#"><b><span class="fa fa-shopping-user">&nbsp; Hello <?php echo explode(' ', $_SESSION['user_name'], 2)[0]; ?></span></b></a>
+
+							<?php
+								}
+							?>
 						</li>
 
 					</ul>
@@ -139,6 +157,10 @@
         		<h4 class="modal-title">Sign In</h4>
       		</div>
       		<div class="modal-body">
+      			<center>
+      				<span id="error"></span>
+      			</center>
+
         		<div class="form-group">
         			<label for="email">E-mail:</label>
   					<input type="email" class="form-control" id="email" name="email">
@@ -150,7 +172,7 @@
       		</div>
       		<div class="modal-footer">
       			<center>
-        			<button type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
+        			<button type="button" id="login_btn" class="btn btn-default">Submit</button>
         		</center>
       		</div>
     	</div>
@@ -164,7 +186,7 @@
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
-<script>
+<script type="text/javascript">
 	
 	$(document).ready(function(){
 		if($('.navbar-toggle').css('display') == "block"){
@@ -172,6 +194,13 @@
 		}else if($('.navbar-toggle').css('display') == "none"){
 			$('li').css('text-align', 'right');
 		}
+
+		$('#login_btn').on('click', function(){
+			validateSignIn();
+		});
+
+		$("#error").hide();
+
 	});
 
 	$(window).resize(function(){
@@ -182,8 +211,53 @@
 		}
 	});
 
+
+	function validateSignIn()
+    {
+    	var email = $("#email").val();
+        var password = $("#password").val();
+
+        console.log("\n" + email);
+        console.log("\n" + password);
+              
+        if((email=="")&&(password!="")) //if email is blank
+        {
+            $("#error").html = "<h5>Enter Email ID !</h5>";
+        }
+        else if((email!="")&&(password=="")) //if password is blank
+		{
+			$("#error").html = "<h5>Enter Password !</h5>";
+		}
+		else if((email=="")&&(password=="")) //if both are blank
+		{
+			$("#error").html = "<h5>Enter Email ID and Password !</h5>";
+		}
+		else{
+			//alert(2);
+			$.post("../server/user_login.php",
+			{
+				email: email,
+				password: password
+			},
+			function(data,status){
+
+				jsonObj = JSON.parse(data);
+                
+				if(jsonObj[0] == "false"){
+					$("#error").html("<h5>Incorrect Email ID and/or Password !</h5>");
+					$("#error").show(100);
+				}
+				else if(jsonObj.user_role == "admin"){
+					
+					window.location.href = "../admin/master_home.php";
+				}
+				else if(jsonObj.user_role == "user"){
+
+					window.location.reload();
+
+				}
+			});
+		}
+	}
+
 </script>
-
-</body>
-
-</html>

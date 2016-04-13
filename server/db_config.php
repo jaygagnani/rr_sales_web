@@ -128,15 +128,19 @@ class DbConnection {
 		}
 		
 		function loginUser($user_email, $user_password){
-			$sql = "select * from ".self::USER." where user_email = '$user_email' and user_password = '$user_password';";
+			$sql = "select * from ".self::USER." where user_email = '$user_email' and user_password = '".md5($user_password)."';";
 			$result = self::$mysqli->query($sql);
-			
+                       
 			if($result->num_rows == 1){
-				$row = $result->fetch_row();
+                      
+				$row = $result->fetch_array(MYSQLI_ASSOC);
+                                
 				return json_encode($row);
+                                
 			}
-			return false;
-		}
+            
+            return json_encode(array("false"));
+    	}
 		// End Login and Registration Functions
 	
 		// Manage Profile Functions
@@ -385,11 +389,13 @@ class DbConnection {
 	}
 
 // Fetch all records
-	function fetchProducts($category_nicename, $offset = 0, $limit = 40){
+	function fetchProducts($category_nicename, $current_page = 1, $limit = 40){
 		$category = $this->fetchCategoryDetails($category_nicename);
-		if($category['id'] < 0)
+		if($category['id'] <= 0)
 			return json_encode(false);
 		
+		$offset = ($current_page - 1) * $limit;
+
 		$sql = "select * from ".self::PRODUCT." where category_id=$category[id] order by product_id asc LIMIT $limit OFFSET $offset;";
 		$result = self::$mysqli->query($sql);
 		$products[] = array('category_name'=>$category['name'], 'category_img'=>$category['img'], 'category_nicename'=>$category['nicename']);
@@ -410,7 +416,7 @@ class DbConnection {
 			header('Content-Type: application/json');
 			return json_encode($products);
 		}
-		return json_encode(false, $products);
+		return json_encode($products);
 	}
 
 	function fetchProductsForDownload($category_nicename){

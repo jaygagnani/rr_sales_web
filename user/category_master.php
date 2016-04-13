@@ -24,43 +24,57 @@
 
 <body>
 
+<div class="wrapper" style="height: 100%;">
+	
+	<?php require_once('./navbar.php'); ?>
 
-<?php require_once('./navbar.php'); ?>
-
-<div class="container">
-	<div class="row">
+	<div class="container">
+		<div class="row">
 		
-		<?php require_once('./filter_bar.php'); ?>
+			<?php require_once('./filter_bar.php'); ?>
 
  
- 		<div class="col-lg-10 col-md-10" id="category-container" style="padding-left: 65px;">
-			<div id="title" class="col-lg-12 col-md-12" style="border-top: 1px solid #000; border-bottom: 1px solid #000; font-size: 1.2em; line-height: 25px;">
-				Product
-			</div>
+ 			<div class="col-lg-10 col-md-10" id="category-container" style="padding-left: 65px;">
+				<div id="title" class="col-lg-12 col-md-12" style="border-top: 1px solid #000; border-bottom: 1px solid #000; font-size: 1.2em; line-height: 25px;">
+					<!-- Category Name -->
+					<br/>
+				</div>
 
-			<div class="col-lg-12 col-md-12" id="display-product" style="margin-top: 50px;">
-				
-				<!-- Products within current category will be displayed here -->
+				<div class="col-lg-12 col-md-12" style="margin-top: 5px;">
 
-			</div>
+					<div class="row">
+						<div class="col-lg-12 col-md-12 col-sm-12" id="product-count" style="text-align: right; padding-right: 15px; color: rgb(235,46,58); text-transform: none; font-weight: bold;">
+							Showing 1 - 40 products.
+						</div>
+					</div>
 
-			<div>
-				<ul class="pagination pagination-sm">
-					<li><a href="#">&lt;&lt;</a></li>
-  					<li><a href="#" class="active">1</a></li>
-  					<li><a href="#">2</a></li>
-  					<li><a href="#">3</a></li>
-  					<li><a href="#">4</a></li>
-  					<li><a href="#">5</a></li>
-  					<li><a href="#">&gt;&gt;</a></li>
-				</ul>
+					<div class="row">
+						<div class="col-lg-12 col-md-12 col-sm-12" style="text-align: right;">
+							<?php include('./pagination.php'); ?>
+						</div>
+					</div>
+
+					<div class="col-lg-12 col-md-12" id="display-product">
+						
+						<!-- Products within current category will be displayed here -->
+
+					</div>
+
+					<div class="row">
+						<div class="col-lg-12 col-md-12 col-sm-12" style="text-align: right; margin-top: -30px;">
+							<?php include('./pagination.php'); ?>
+						</div>
+					</div>
+
+				</div>
 			</div>
 
 		</div>
-
 	</div>
-</div>
 
+	<?php include_once('./footer.php'); ?>
+
+</div>
 
 <!-- Scripts Section -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
@@ -69,6 +83,12 @@
 <script src="./js/common_js.js" type="text/javascript"></script>
 
 <script>
+
+var DISPLAY_LIMIT = 40;
+var CURR_PAGE = 1;
+var TOTAL_RECORDS = 0;
+
+var CATEGORY = "<?php echo $_GET['category']; ?>";
 
 $(document).load(function(){
 	$('#loader-div').show();
@@ -80,10 +100,11 @@ $(document).ready(function(){
 
 	setMainDisplayContainer($(window));
 
-	//var length;
-	//var callLengthFunction = getProductsLength("<?php echo $_GET['category']; ?>");
+	paginationLength("<?php echo $_GET['category']; ?>", DISPLAY_LIMIT);
 
-	displayProducts(0);
+	paginationNavigation("<?php echo $_GET['category']; ?>", CURR_PAGE);
+	
+
 
 });
 
@@ -91,23 +112,40 @@ $(window).resize(function(){
 	setMainDisplayContainer(this);
 });
 
-function displayProducts(offset){
-	$.getJSON("../server/fetch_products.php?category=<?php echo $_GET['category']; ?>&page="+offset, function(data, status){
-		console.log("get in");
-		if(data){
-			alert(1);
-			var json_data;
-			$.each(data, function(i, category){
-				json_data = "<div class='col-lg-3 col-md-4 col-sm-6 display_catalogue'><a href='./category_master.php?category="+category.nicename+"'><div class='div_with_bg_img' alt='"+category.name+"' style='background: url(../"+category.img+"); background-size:100%; '><div class='div_text_item'>"+category.name+"</div></div></a></div>";
-				$(json_data).appendTo("#display-product");
-			});
-		}else{
-			alert(2);
-			$("#display-product").html("<i>Sorry...No products within this category</i>");
-			$(".pagination").hide();
-		}
-	});
-}
+// function displayProducts(page_number){
+// 	$.getJSON("../server/fetch_products.php?category=<?php echo $_GET['category']; ?>&page="+page_number, function(data, status){
+// 		if(data){
+// 			var json_data;
+			
+// 			$("#title").html(data[0].category_name);
+
+// 			if(data.length > 1){
+				
+// 				$.each(data, function(i, product){
+// 					if(product.id){
+// 						json_data = "<div class='col-lg-3 col-md-4 col-sm-6 display_catalogue'><a href='./product_master.php?product="+product.nicename+"'><div class='div_with_bg_img' alt='"+product.name+"' style='background: url(../"+product.img+"); background-size:100%; '><div class='div_text_item'>"+product.name+"</div></div></a></div>";
+// 						$(json_data).appendTo("#display-product");
+// 					}
+// 				});
+// 				$(".pagination").show() ;
+
+// 			}else{
+
+// 				$("#display-product").html("<i style='color: red; text-transform: none;'>Sorry! No products within this category.</i>");
+// 				$(".pagination").hide() ;
+// 				$("#product-count").hide() ;
+
+// 			}
+// 		}else{
+
+// 			alert(2);
+// 			$("#display-product").html("<i style='color: red; text-transform: none;'>Sorry! No products within this category.</i>");
+// 			$(".pagination").hide() ;
+// 			$("#product-count").hide() ;
+
+// 		}
+// 	});
+// }
 
 </script>
 

@@ -64,12 +64,16 @@ ul.pagination {
 ul.pagination li {display: inline;}
 
 ul.pagination li a {
-    color: black;
+    color: #333399;
     float: left;
-    padding: 8px 16px;
+    padding: 10px;
     text-decoration: none;
     transition: background-color .7s;
 }
+
+/*ul.pagination>li:last-child>a{
+    padding-right: 0px;
+}*/
 
 ul.pagination li a.active {
     background-color: rgb(235,46,58);
@@ -78,9 +82,26 @@ ul.pagination li a.active {
 }
 
 ul.pagination li a:hover:not(.active) {
-  background-color: rgba(235,46,58,.4);
+  /*background-color: rgba(235,46,58,.4);*/
+  background-color: #ffffff;
   color: rgb(235,46,58);
   font-weight: bold;
 }
 
+ul.pagination li.disabled a:hover:not(.active) {
+  background-color: #ffffff;
+  color: #777777;
+  font-weight: normal;
+}
+
 /* ENDS Pagination styling */
+
+footer {
+  position: relative;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 1rem;
+  background-color: #333399;
+  text-align: center;
+}
