@@ -67,3 +67,15 @@ html,body{
 }
 
 /* Styling images */
+
+/* Pagination Styling */
+
+.pagination li a{
+  color: #333399;
+}
+
+.pagination li a:active{
+  color: red;
+}
+
+/* ENDS Pagination Styling */

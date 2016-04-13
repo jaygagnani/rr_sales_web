@@ -14,7 +14,7 @@
     <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <!-- link the materialize css file -->
-	<link href="../css/materialize.css" rel="stylesheet" type="text/css" hreflang="en">
+	<link href="./css/materialize.css" rel="stylesheet" type="text/css" hreflang="en">
 
 <!-- Link custom stylesheets -->
 	<link href="./css/common_styles.css" rel="stylesheet" type="text/css" hreflang="en">
@@ -96,7 +96,7 @@
 
 <!-- Scripts Section -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-<script type="text/javascript" src="../js/materialize.js"></script>
+<script type="text/javascript" src="./js/materialize.js"></script>
 <script type="text/javascript" src="../js/search_keyword.js"></script>
 
 <script>
@@ -113,7 +113,7 @@ $(document).ready(function(){
 			$('#disp_category_img').attr('src',URL.createObjectURL(event.target.files[0]));
     		$('#disp_category_img').show(1000);
     		$('#file_path_tb').show(1000);
-		}else{		
+		}else{	
 			$('#disp_category_img').attr('src', '');
     		$('#disp_category_img').hide();
     		$('#file_path_tb').hide();
@@ -146,7 +146,7 @@ $(document).ready(function(){
 	            	$('#category_name').val("");
 					$('#add_category_modal').closeModal();
         		},
-        		cache: false,
+        		cache: true,
         		contentType: false,
 	        	processData: false
     		});
@@ -162,7 +162,6 @@ $(document).ready(function(){
 
 
 		return true;
-+
 	});
 
 });

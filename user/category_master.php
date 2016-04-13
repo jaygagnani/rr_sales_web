@@ -44,7 +44,7 @@
 
 					<div class="row">
 						<div class="col-lg-12 col-md-12 col-sm-12" id="product-count" style="text-align: right; padding-right: 15px; color: rgb(235,46,58); text-transform: none; font-weight: bold;">
-							Showing 1 - 40 products.
+							<!-- Showing 1 - 40 products. -->
 						</div>
 					</div>
 
@@ -78,7 +78,6 @@
 
 <!-- Scripts Section -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-<script type="text/javascript" src="../js/materialize.js"></script>
 
 <script src="./js/common_js.js" type="text/javascript"></script>
 
@@ -100,10 +99,12 @@ $(document).ready(function(){
 
 	setMainDisplayContainer($(window));
 
-	paginationLength("<?php echo $_GET['category']; ?>", DISPLAY_LIMIT);
+	__getProductsLength(CATEGORY).success(function(data){
 
-	paginationNavigation("<?php echo $_GET['category']; ?>", CURR_PAGE);
-	
+		paginationDisplay(CATEGORY, DISPLAY_LIMIT, data);
+
+		paginationNavigation(CATEGORY, CURR_PAGE, DISPLAY_LIMIT, data);
+	});
 
 
 });

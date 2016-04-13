@@ -26,7 +26,7 @@ $_SESSION['category_nicename'] = $_GET['category'];
     <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <!-- link the materialize css file -->
-	<link href="../css/materialize.css" rel="stylesheet" type="text/css" hreflang="en">
+	<link href="./css/materialize.css" rel="stylesheet" type="text/css" hreflang="en">
 
 <!-- Link custom stylesheets -->
 	<link href="./css/common_styles.css" rel="stylesheet" type="text/css" hreflang="en">
@@ -89,15 +89,31 @@ $_SESSION['category_nicename'] = $_GET['category'];
 		</div>
 
 		<div class="row">
+
 			<div class="col l12 m12 s12">
 				<div class="card" style="width: 97%;">
 					<div class="card-content">
-						<div class="row" id="display-product" style="padding:20px; padding-top: 30px;">
+
+						<div class="row">
+							<div class="col l12 m12 s12">
+								<?php include('./pagination.php'); ?>
+							</div>
+						</div>
+
+						<div class="row" id="display-product" style="padding:20px;">
 							<!-- Products will be printed here from fetchProducts() method -->
 						</div>
+
+						<div class="row">
+							<div class="col l12 m12 s12">
+								<?php include('./pagination.php'); ?>
+							</div>
+						</div>
+
 					</div>
 				</div>
 			</div>
+
 		</div>
 	</div>
 	<div class="fixed-action-btn" id="add_product_btn" style="right: 24px; bottom: 43px;">
@@ -110,44 +126,56 @@ $_SESSION['category_nicename'] = $_GET['category'];
 
 <!-- Scripts Section -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-<script type="text/javascript" src="../js/materialize.js"></script>
+<script type="text/javascript" src="./js/materialize.js"></script>
+
+<script type="text/javascript" src="./js/common_js.js"></script>
 
 <script type="text/javascript">
 
 category_name=null;
 
+var DISPLAY_LIMIT = 40;
+var CURR_PAGE = 1;
+var TOTAL_RECORDS = 0;
+
+var CATEGORY = "<?php echo $_GET['category']; ?>";
+
+
 $(document).ready(function(){
 	$('.input-field span').hide();
-	fetchProducts();
+
+	paginationLength("<?php echo $_GET['category']; ?>", DISPLAY_LIMIT);
+
+	paginationNavigation("<?php echo $_GET['category']; ?>", CURR_PAGE);
 
 	//$('.modal-trigger').leanModal();
 });
 
-function fetchProducts(){
-	$.getJSON("../server/fetch_products.php?category=<?php echo $_SESSION['category_nicename']; ?>", function(data){
-		if(data){
-			var json_data;
-			$.each(data, function(i, product){
-				if(product.id){
-					json_data = "<div class='col l3 m6 s6 center display_data_in_card'><a href='category_master.php?category="+product.nicename+"'><div class='div_with_bg_img' style='background: url(../"+product.img+");'><div class='div_text_item' style='height: 40px;'>"+product.name+"</div></div></a></div>";
-					//json_data = "<div class='col l3 m6 s6 center display_data_in_card'><a href='product_master.php?product="+product.nicename+"'><img src='../"+product.img+"' alt='' class='responsive-img' style='border-bottom:1px solid #000; height: 150px; width: 220px; margin-bottom: 5px;'/></a><br/><center><span>"+product.name+"</span></center></div>";
-					$(json_data).appendTo('#display-product');
-				}
-				else if(product.category_name && product.category_img){
-					$('#category_name').val(product.category_name);
-					$('#category_name_lbl').hide();
-					$('#category_img').attr('src',"../"+product.category_img);
-					$('#category_img').on('mouseout',function(){
-						$('#category_img').attr('src',"../"+product.category_img);
-					});
-				}
-			});
-		}else{
-			json_data += "No Category Found";
-			$(json_data).appendTo('#displayJson');
-		}
-	});
-}
+// function fetchProducts(){
+// 	$.getJSON("../server/fetch_products.php?category=<?php echo $_SESSION['category_nicename']; ?>", function(data){
+// 		if(data){
+// 			var json_data;
+// 			$.each(data, function(i, product){
+// 				if(product.id){
+// 					json_data = "<div class='col l3 m6 s6 center display_data_in_card'><a href='category_master.php?category="+product.nicename+"'><div class='div_with_bg_img' style='background: url(../"+product.img+");'><div class='div_text_item' style='height: 40px;'>"+product.name+"</div></div></a></div>";
+// 					//json_data = "<div class='col l3 m6 s6 center display_data_in_card'><a href='product_master.php?product="+product.nicename+"'><img src='../"+product.img+"' alt='' class='responsive-img' style='border-bottom:1px solid #000; height: 150px; width: 220px; margin-bottom: 5px;'/></a><br/><center><span>"+product.name+"</span></center></div>";
+// 					$(json_data).appendTo('#display-product');
+// 				}
+// 				else if(product.category_name && product.category_img){
+// 					$('#category_name').val(product.category_name);
+// 					$('#category_name_lbl').hide();
+// 					$('#category_img').attr('src',"../"+product.category_img);
+// 					$('#category_img').on('mouseout',function(){
+// 						$('#category_img').attr('src',"../"+product.category_img);
+// 					});
+// 				}
+// 			});
+// 		}else{
+// 			json_data += "No Category Found";
+// 			$(json_data).appendTo('#displayJson');
+// 		}
+// 	});
+// }
 
 
 function editCategoryName(){

@@ -14,7 +14,7 @@
     <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <!-- link the materialize css file -->
-  <link href="../css/materialize.css" rel="stylesheet" type="text/css" hreflang="en">
+  <link href="./css/materialize.css" rel="stylesheet" type="text/css" hreflang="en">
 
 <!-- Link custom stylesheets -->
   <link href="./css/common_styles.css" rel="stylesheet" type="text/css" hreflang="en">
@@ -137,7 +137,7 @@
 
 
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-<script type="text/javascript" src="../js/materialize.js"></script>
+<script type="text/javascript" src="./js/materialize.js"></script>
 
 <script>
 

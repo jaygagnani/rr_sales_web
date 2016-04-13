@@ -13,12 +13,12 @@ function setMainDisplayContainer(obj){
 	}
 
 	// To display the pagination box
-	function paginationLength(category, limit){
+	function paginationDisplay(category, limit, data){
 
 		var total_records = 0;
 		var total_pages = 1;
 		
-		__getProductsLength(category).success(function(data){
+		//__getProductsLength(category).success(function(data){
 			
 			total_records = data;
 
@@ -39,27 +39,35 @@ function setMainDisplayContainer(obj){
 			}
 			else if(total_pages > 1){
 
-				$("ul.pagination").html("<li class='previous'><a href='#' onclick=paginationNavigation('"+ category +"','prev')>Previous page</a></li>");
-				$("ul.pagination").append("<li><a href='#' onclick=paginationNavigation('"+ category +"','prev')>&#x25C4</a></li>");
+				$("ul.pagination").html("<li class='previous'><a href='#' onclick=paginationNavigation('"+ category +"','prev',"+ limit +")>Previous page</a></li>");
+				$("ul.pagination").append("<li><a href='#' onclick=paginationNavigation('"+ category +"','prev',"+ limit +")>&#x25C4</a></li>");
 				
 				for(i=0; i < total_pages; i++){
 					if(i == 0){
-						$("ul.pagination").append("<li><a href='#' class='active' value='"+ (i+1) +"' onclick=paginationNavigation('"+ category +"',"+ (i+1) +");>" + (i+1) + "</a></li>");
+						$("ul.pagination").append("<li><a href='#' class='active' value='"+ (i+1) +"' onclick=paginationNavigation('"+ category +"',"+ (i+1) +","+ limit +");>" + (i+1) + "</a></li>");
 						continue;
 					}
-					$("ul.pagination").append("<li><a href='#' class='abc' value='"+ (i+1) +"' onclick=paginationNavigation('"+ category +"',"+ (i+1) +")>"+ (i+1) +"</a></li>");
+					$("ul.pagination").append("<li><a href='#' class='abc' value='"+ (i+1) +"' onclick=paginationNavigation('"+ category +"',"+ (i+1) +","+ limit +")>"+ (i+1) +"</a></li>");
 				}
 				
-				$("ul.pagination").append("<li><a href='#!' onclick=paginationNavigation('"+ category +"','next');>&#x25BA</a></li>");
-				$("ul.pagination").append("<li class='next'><a href='#!' onclick=paginationNavigation('"+ category +"','next');>Next page</a></li>");
+				$("ul.pagination").append("<li><a href='#!' onclick=paginationNavigation('"+ category +"','next',"+ limit +");>&#x25BA</a></li>");
+				$("ul.pagination").append("<li class='next'><a href='#!' onclick=paginationNavigation('"+ category +"','next',"+ limit +");>Next page</a></li>");
 			}
-		});
+		//});
 	}
 
 	// To traverse between pages using the pagination
-	function paginationNavigation(category, page){
+	function paginationNavigation(category, page, limit, total_records){
 	
 		var page_number = 1;
+
+		var next, next_symbol, last, last_symbol;
+
+		previous = $(".pagination li:first-child");
+		previous_symbol = $(".pagination li:nth-child(2)");
+
+		next = $(".pagination li:last-child");
+		next_symbol = $(".pagination li:nth-last-child(2)");
 
 		var active_page = $(".pagination a.active");
 
@@ -115,7 +123,57 @@ function setMainDisplayContainer(obj){
 
 		}
 
+
+		if((page_number > 1) && (page_number < $(".pagination li:nth-last-child(3)").html())){
+
+			alert(1);
+			if(next.hasClass("disabled") || next_symbol.hasClass("disabled")){
+				next.removeClass("disabled");
+				next_symbol.removeClass("disabled");
+			}
+			if(previous.hasClass("disabled") || previous_symbol.hasClass("disabled")){
+				previous.removeClass("disabled");
+				previous_symbol.removeClass("disabled");
+			}
+		}
+		else if(page_number <= 1){
+
+			alert(2);
+
+			previous.addClass("disabled");
+			previous_symbol.addClass("disabled");
+
+			if(next.hasClass("disabled") || next_symbol.hasClass("disabled")){
+				next.removeClass("disabled");
+				next_symbol.removeClass("disabled");
+			}
+		}
+		else if(page_number >= $(".pagination li:nth-last-child(3)").html()){
+
+			alert(3);
+
+			next.addClass("disabled");
+			next_symbol.addClass("disabled");
+
+			if(previous.hasClass("disabled") || previous_symbol.hasClass("disabled")){
+				previous.removeClass("disabled");
+				previous_symbol.removeClass("disabled");
+			}
+		}
+
 		displayProducts(category, page_number);
+
+		var last_record = (page_number) * limit;
+		var first_record = (last_record - limit) + 1;
+
+		if(page_number == $(".pagination li:nth-last-child(3)>a").html()){
+			last_record = total_records;
+		}
+
+		console.log("last_record : " + last_record);
+		console.log("first_record : " + first_record);
+
+		$("#product-count").html("Showing " + first_record + " - " + last_record + "products."); 
 
 	}
 
