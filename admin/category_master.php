@@ -51,7 +51,7 @@ $_SESSION['category_nicename'] = $_GET['category'];
 	<div class="col l3 m3 s12">
 		<div class="card" style="left: 15px;">
 			<div class="card-content">
-				<img id="category_img" src="" class="responsive-img" onmouseover="$(this).attr('src','../images/dummy_pics/2.jpg');" style="width: 100%; height: inherit; padding: 0px;"/>
+				<img id="category_img" src="" class="responsive-img" style="width: 100%; height: inherit; padding: 0px;"/>
 			</div>
 		</div>
 
@@ -65,7 +65,7 @@ $_SESSION['category_nicename'] = $_GET['category'];
         	</div>
 
 			<div class="col l12 m12 s4">
-        		<a class="waves-effect waves-light btn" style="margin-top: 25px; background-color: red; color: #fff;">Delete Category</a>
+        		<a class="waves-effect waves-light btn" onclick="deleteCategory();" style="margin-top: 25px; background-color: red; color: #fff;">Delete Category</a>
         	</div>
         </div>
 	</div>
@@ -149,33 +149,13 @@ $(document).ready(function(){
 	paginationNavigation("<?php echo $_GET['category']; ?>", CURR_PAGE);
 
 	//$('.modal-trigger').leanModal();
+
 });
 
-// function fetchProducts(){
-// 	$.getJSON("../server/fetch_products.php?category=<?php echo $_SESSION['category_nicename']; ?>", function(data){
-// 		if(data){
-// 			var json_data;
-// 			$.each(data, function(i, product){
-// 				if(product.id){
-// 					json_data = "<div class='col l3 m6 s6 center display_data_in_card'><a href='category_master.php?category="+product.nicename+"'><div class='div_with_bg_img' style='background: url(../"+product.img+");'><div class='div_text_item' style='height: 40px;'>"+product.name+"</div></div></a></div>";
-// 					//json_data = "<div class='col l3 m6 s6 center display_data_in_card'><a href='product_master.php?product="+product.nicename+"'><img src='../"+product.img+"' alt='' class='responsive-img' style='border-bottom:1px solid #000; height: 150px; width: 220px; margin-bottom: 5px;'/></a><br/><center><span>"+product.name+"</span></center></div>";
-// 					$(json_data).appendTo('#display-product');
-// 				}
-// 				else if(product.category_name && product.category_img){
-// 					$('#category_name').val(product.category_name);
-// 					$('#category_name_lbl').hide();
-// 					$('#category_img').attr('src',"../"+product.category_img);
-// 					$('#category_img').on('mouseout',function(){
-// 						$('#category_img').attr('src',"../"+product.category_img);
-// 					});
-// 				}
-// 			});
-// 		}else{
-// 			json_data += "No Category Found";
-// 			$(json_data).appendTo('#displayJson');
-// 		}
-// 	});
-// }
+// history.pushState(null, null, "<?php echo $_SERVER['REQUEST_URI']; ?>");
+// window.addEventListener('popstate', function(event){
+// 	window.location.assign("./master_home.php");
+// });
 
 
 function editCategoryName(){
@@ -209,9 +189,20 @@ function updateCategoryNameInDb(category_name){
 		function(data,status){
 			//alert(data+"\n"+status);
 			if(status == "success"){
-				alert(data + "\n<?php echo $_SESSION['category_nicename']; ?>");
-				//window.location.href="./category_master.php?category="data;
+				//alert(data + "\n2 : <?php echo $_SESSION['category_nicename']; ?>");
+				window.location.href="./category_master.php?category=" + data;
 			}
+		}
+	);
+}
+
+function deleteCategory(){
+	$.get("../server/delete_category.php?category=<?php echo $_SESSION['category_nicename']; ?>", 
+		function(data, status){
+			if(data == true)
+				window.location.href = "./master_home.php";
+			else
+				alert("Some problem was occured. Please try again!");
 		}
 	);
 }
@@ -219,3 +210,5 @@ function updateCategoryNameInDb(category_name){
 </script>
 
 </body>
+
+</html>

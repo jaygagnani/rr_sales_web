@@ -1,3 +1,20 @@
+<?php
+
+if(session_status() == PHP_SESSION_NONE)
+	session_start();
+
+if(isset($_REQUEST['category'])){
+
+	$_SESSION['category'] = $_REQUEST['category'];
+}
+else{
+	header("Location: ./");
+	exit;
+}
+
+?>
+
+
 <!DOCTYPE html>
 
 <html lang="en">
@@ -79,11 +96,13 @@
 <!-- Scripts Section -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
 <script src="./js/common_js.js" type="text/javascript"></script>
 
 <script>
 
-var DISPLAY_LIMIT = 40;
+var DISPLAY_LIMIT = 30;
 var CURR_PAGE = 1;
 var TOTAL_RECORDS = 0;
 
@@ -112,41 +131,6 @@ $(document).ready(function(){
 $(window).resize(function(){
 	setMainDisplayContainer(this);
 });
-
-// function displayProducts(page_number){
-// 	$.getJSON("../server/fetch_products.php?category=<?php echo $_GET['category']; ?>&page="+page_number, function(data, status){
-// 		if(data){
-// 			var json_data;
-			
-// 			$("#title").html(data[0].category_name);
-
-// 			if(data.length > 1){
-				
-// 				$.each(data, function(i, product){
-// 					if(product.id){
-// 						json_data = "<div class='col-lg-3 col-md-4 col-sm-6 display_catalogue'><a href='./product_master.php?product="+product.nicename+"'><div class='div_with_bg_img' alt='"+product.name+"' style='background: url(../"+product.img+"); background-size:100%; '><div class='div_text_item'>"+product.name+"</div></div></a></div>";
-// 						$(json_data).appendTo("#display-product");
-// 					}
-// 				});
-// 				$(".pagination").show() ;
-
-// 			}else{
-
-// 				$("#display-product").html("<i style='color: red; text-transform: none;'>Sorry! No products within this category.</i>");
-// 				$(".pagination").hide() ;
-// 				$("#product-count").hide() ;
-
-// 			}
-// 		}else{
-
-// 			alert(2);
-// 			$("#display-product").html("<i style='color: red; text-transform: none;'>Sorry! No products within this category.</i>");
-// 			$(".pagination").hide() ;
-// 			$("#product-count").hide() ;
-
-// 		}
-// 	});
-// }
 
 </script>
 

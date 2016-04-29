@@ -26,10 +26,16 @@ if(!session_id())
 	<link href="./css/common_styles.css" rel="stylesheet" type="text/css" hreflang="en">
 
 	<style>
-		input[type=text]:disabled{
-			color: #000;
-			border-bottom: 2px solid red;
+		input[type=text]:disabled,
+		input[type=number]:disabled{
+			color: #000 !important;
+			border-bottom: 2px solid red !important;
 		}
+
+		input[type=text]{
+			color: #000;
+		}
+
 	</style>
 
 </head>
@@ -42,56 +48,81 @@ if(!session_id())
 
 
 <div class="row">
-	<div class="col s3 hide-on-med-and-up"><br/></div>
-	<div class="col l3 m3 s6">
-		<div class="card" style="left: 15px;">
-			<div class="card-content">
-				<img id="product_img" src="../images/dummy_pics/1.jpg" class="responsive-img" style="width: 100%; height: inherit; padding: 0px;"/>
+	<form id="product_form" enctype="multipart/form-data">
+		
+		<div class="col s3 hide-on-med-and-up"><br/></div>
+		
+		<div class="col l3 m3 s6">
+			<div class="card" style="left: 15px;">
+				<div class="card-content">
+					<img id="product_img" name="product_img" src="../images/dummy_pics/1.jpg" class="responsive-img" style="width: 100%; height: inherit; padding: 0px;"/>
+				</div>
 			</div>
+
+			<!-- Change Image Btn -->
+			<div class="file-field" id="change_image_btn" hidden>
+				<div class="btn">
+					<span> File </span>
+					<input type="file" name="new_image_file" id="new_image_file">
+				</div>
+				<div class="file-path-wrapper">
+					<input class="file-path validate" type="text">
+				</div>
+			</div>
+			<!-- Ends Change Image Btn -->
+
 		</div>
-	</div>
-	<div class="col s3 hide-on-med-and-up"><br/></div>
-	<div class="col l9 m9 s12">
-		<div class="row">
-			<div class="col l12 m12 s12">
-				<div class="col s1 hide-on-med-and-up"><br/></div>
-				<div class="input-field col l6 m6 s10">
-					<label for="product_name" id="product_name_lbl">Product Name</label>
-          			<input id="product_name" type="text" class="validate set_editable" disabled="true" style="float:left; font-style: bold; font-size: 2em;"/>
-        		</div>
-        		<div class="col l5 m7 s4 right">
-        			<div class="right">
-        				<a class="waves-effect waves-light btn" style="margin-top: 25px; right: 20px; background-color: #fff; color: red;">Delete Product</a>
+
+		<div class="col s3 hide-on-med-and-up"><br/></div>
+		
+		<div class="col l9 m9 s12">
+			<div class="row">
+				<div class="col l12 m12 s12">
+					<div class="col s1 hide-on-med-and-up"><br/></div>
+					<div class="input-field col l6 m6 s10">
+						<label for="product_name" id="product_name_lbl">Product Name</label>
+          				<input id="product_name" name="product_name" type="text" class="validate set_editable" disabled="true" style="float:left; font-style: bold; font-size: 2em;"/>
         			</div>
-        		</div>
-        		<!-- <div class="col s1 hide-on-med-and-up"><br/></div> -->
+        			<div class="col l5 m7 s4 right">
+	        			<div class="right">
+        					<a id="delete_product_btn" class="waves-effect waves-light btn" onclick='deleteProduct("<?php echo $_GET['product'] ?>", "<?php if(isset($_SESSION['category_nicename'])) {echo $_SESSION['category_nicename'];} else{echo null;} ?>")' style="margin-top: 25px; right: 20px; background-color: #fff; color: red;">Delete Product</a>
+        				</div>
+        			</div>
+        			<!-- <div class="col s1 hide-on-med-and-up"><br/></div> -->
+				</div>
 			</div>
-		</div>
 
-		<div class="row">
-			<div class="col l12 m12 s12">
-				<div class="card" style="width: 97%;">
-					<div class="card-content">
-						<div class="row" id="display-product-details" style="padding:20px; padding-top: 30px;">
-							<!-- Products will be printed here from fetchProducts() method -->
+			<div class="row">
+				<div class="col l12 m12 s12">
+					<div class="card" style="width: 97%;">
+						<div class="card-content">
+
+							<div class="row" id="display-product-details" style="padding:20px; padding-top: 30px;">
+
+								<!-- Products will be printed here from fetchProductDetails() method -->
+
+							</div>
+
+							<div id="save_btn" class="row" style="display: hidden;">
+								<center>
+									<a class="waves-effect waves-light btn" style="background-color: #333399;">Save Changes</a>
+								</center>
+							</div>
+
 						</div>
-
-						<div id="save_btn" class="row" style="display: hidden;">
-							<center>
-								<a class="waves-effect waves-light btn">Save Changes</a>
-							</center>
-						</div>
-
 					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-	<div class="fixed-action-btn" id="add_product_btn" style="right: 24px; bottom: 43px;">
+		
+		<div class="fixed-action-btn" id="add_product_btn" style="right: 24px; bottom: 43px;">
 			<a class="btn-floating btn-large waves-effect waves-light red modal-trigger" onclick="editProductDetails();">
 				<i class="material-icons">edit</i>
 			</a>
 		</div>
+
+	</form>
+
 </div>
 
 
@@ -99,65 +130,19 @@ if(!session_id())
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 <script type="text/javascript" src="./js/materialize.js"></script>
 
+<script type="text/javascript" src="./js/common_js.js"></script>
+
 
 <script type="text/javascript">
 
 $(document).ready(function(){
 	$('#save_btn').hide();
-	fetchProductDetails();
+
+
+	fetchProductDetails("<?php if(isset($_SESSION['category_nicename'])) {echo $_SESSION['category_nicename'];} else{echo null;} ?>", "<?php echo $_GET['product']; ?>");
+
 });
 
-
-function fetchProductDetails(){
-	$.getJSON("../server/fetch_product_details.php?category=<?php echo $_SESSION['category_nicename']; ?>&product=<?php echo $_GET['product']; ?>", function(data){
-		if(data){
-			var json_data;
-			$.each(data, function(i, product){
-				if(product.id){
-
-					$('#product_img').attr('src','../'+product.img);
-					$('#product_img').attr('alt',product.name);
-
-					$('#product_name').val(product.name);
-					$('#product_name_lbl').hide();
-
-					json_data = "";
-					json_data += "<div class='row'><p class='col l2'>Product ID : </p><input type='text' class='col l6 set_editable product_detail' value='"+product.product_id+"' disabled/></div>";
-					json_data += "<div class='row'><p class='col l2'>Rate per Quantity : </p> <input type='text' class='col l6 set_editable product_detail' value='Rs. "+product.rate+" / "+product.per+" ("+product.min_qty+")' disabled /></div>";
-					json_data += "<div class='row'><p class='col l2'>Vehicle : </p><input type='text' class='col l6 set_editable product_detail' value='"+product.vehicle+"' disabled/></div>";
-					json_data += "<div class='row'><p class='col l2'>Description : </p><input type='text' class='col l6 set_editable product_detail' value='"+product.description+"' disabled/></div>";
-
-					if(product.meta_length > 0){
-						json_data += "<br/><h6><b>Extra Information</b></h6>";
-						json_data += "<hr/>";
-
-						$.each(product.meta_data, function(i, meta_data){
-
-							json_data += "<div class='row'><p class='col l2'>"+Object.keys(meta_data)+" : </p><input type='text' class='col l6 set_editable product_detail' value='"+meta_data[Object.keys(meta_data)]+"' disabled /></div>";
-
-						});
-						// json_data += "<p>"+$i->key+"</p>";
-					}
-					else{
-						json_data += "</div>";
-					}
-
-					$(json_data).appendTo('#display-product-details');
-				}
-			});
-		}else{
-			json_data += "No Category Found";
-			$(json_data).appendTo('#displayJson');
-		}
-	});
-}
-
-
-function editProductDetails(){
-	console.log(1);
-	$('input').attr('disabled',false);
-	$('#save_btn').show(100);
-}
 
 </script>
 

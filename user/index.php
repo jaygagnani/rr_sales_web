@@ -37,7 +37,9 @@
 <div class="container">
 	<div class="row">
 		
+		
 		<?php require_once('./filter_bar.php'); ?>
+		
 
 		<div class="col-lg-10 col-md-10" id="category-container" style="padding-left: 65px;">
 			<div class="col-lg-12 col-md-12" style="border-top: 1px solid #000; border-bottom: 1px solid #000; font-size: 1.2em; line-height: 25px;">
@@ -88,14 +90,16 @@ $(document).ready(function(){
 	$("#display-category").html('');
 
 	setMainDisplayContainer($(window));
-
+	
 	$.getJSON("../server/fetch_categories.php", function(data, status){
 		if(data){
 			var json_data;
+		
 			$.each(data, function(i, category){
 				json_data = "<div class='col-lg-3 col-md-4 col-sm-6 display_catalogue'><a href='./category_master.php?category="+category.nicename+"'><div class='div_with_bg_img' alt='"+category.name+"' style='background: url(../"+category.img+"); background-size:100%; '><div class='div_text_item'>"+category.name+"</div></div></a></div>";
 				$(json_data).appendTo("#display-category");
 			});
+		
 		}
 	});
 

@@ -96,6 +96,79 @@ ul.pagination li.disabled a:hover:not(.active) {
 
 /* ENDS Pagination styling */
 
+
+/* Breadcurmbs Styling */
+
+ul.breadcrumb{
+  margin-bottom: -30px;
+  background-color: inherit;
+}
+
+/*.breadcrumb>li+li:before{
+  content: "/\00a0";
+}*/
+
+/* ENDS Breadcrumbs Styling */
+
+
+
+/* Similar Products Carousel Styling */
+
+.carousel-inner .active.left { left: -33%; }
+.carousel-inner .next        { left:  33%; }
+.carousel-inner .prev        { left: -33%; }
+.carousel-control.left,.carousel-control.right {background-image:none; color: #333399;}
+
+/* ENDS Similar Products Carousel Styling */
+
+
+/* Table Styling */
+
+.table {
+      border: 1px solid;
+      border-bottom: 2px solid;
+    }
+
+    table thead tr .no-border,
+    table tbody tr .no-border,
+    table tfoot tr .no-border{
+      border: 1px solid;
+      border-color: #333399;
+      border-bottom: 0;
+      border-top: 0;
+    }
+
+    table tfoot tr .no-border{
+      border: none;
+      border-top: 2px solid;
+    }
+
+    .table thead tr th,
+    .table tbody tr td,
+    .table tfoot tr td{
+      padding: 10px;
+    }
+
+    .table-striped>tbody>tr:nth-of-type(odd){
+      background-color: #ffffff;
+    }
+
+    .table-striped>tbody>tr:nth-of-type(even){
+      background-color: #f9f9f9;
+    }
+
+    .table>thead>tr.active>th{
+      background-color: #e5e5e5;
+    }
+
+/* ENDS Table Styling */
+
+
+.error-msg-display{
+  color: red;
+  font-style: italic;
+}
+
 footer {
   position: relative;
   right: 0;

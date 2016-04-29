@@ -1,3 +1,15 @@
+<?php
+
+if(session_status() == PHP_SESSION_NONE){
+	session_start();
+}
+
+if($_SESSION['user_role'] != "admin"){
+	header("Location: ../user/");
+}
+
+?>
+
 <!DOCTYPE>
 <html>
 
@@ -106,14 +118,14 @@
 		        	</form>
 		        </li>
         		<li><a href="#!" class="dropdown-button" data-activates="settings_large_dropdown" data-beloworigin="true" data-hover="true" data-constrainWidth="false"><i class="material-icons">settings</i></a></li>
-        		<li><a href="#!" class="tooltipped" data-position="bottom" data-tooltip="Logout" data-delay="10"><i class="material-icons">power_settings_new</i></a></li>
+        		<li><a href="./destroy_session.php" class="tooltipped" data-position="bottom" data-tooltip="Logout" data-delay="10"><i class="material-icons">power_settings_new</i></a></li>
       		</ul>
 
       		<!-- Menu Dropdown -->
       		<ul class="right hide-on-large-only">
     			<li><a href="#" id="small_search_a"><i class="material-icons">search</i></a></li>
     			<li><a href="#" class="dropdown-button" data-activates="settings_med_small_dropdown" data-beloworigin="true" data-hover="true" data-constrainWidth="true"><i class="material-icons">settings</i></a></li>
-        		<li><a href="#!" class="tooltipped" data-position="bottom" data-tooltip="Logout" data-delay="10"><i class="material-icons">power_settings_new</i></a></li>
+        		<li><a href="./destroy_session.php" class="tooltipped" data-position="bottom" data-tooltip="Logout" data-delay="10"><i class="material-icons">power_settings_new</i></a></li>
   			</ul>
       		<!-- Dropdown menu ends -->
 
