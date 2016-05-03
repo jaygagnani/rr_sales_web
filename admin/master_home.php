@@ -76,16 +76,16 @@
       							</div>
       						</div>
       						<div class="row">
-			      				<div class="btn" style="margin-left: 25%;">
+			      				<div class="btn" style="margin-left: 25%; background-color: #333399;">
 	        						<span>Upload Image</span>
-        							<input type="file" name="category_img_file" id="i_file"/>
+        							<input type="file" name="category_img_file" id="i_file" style="background-color: #333399;"/>
       							</div>
       						</div>
       					</div>
   					</div>
   				</div>
   				<div class="row center">
-  					<button class="btn waves-effect waves-light" type="submit" name="action">Submit</button>
+  					<button class="btn waves-effect waves-light" type="submit" name="action" style="background-color: #333399;">Submit</button>
   				</div>
   			</form>
 		</div>

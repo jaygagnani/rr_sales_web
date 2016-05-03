@@ -81,6 +81,7 @@
 								<div class="col-lg-7 col-md-7" style="padding-left: 10px;">
 									<div class="row">
 										<h2 id="product-name"> <!-- product's NAME here --> </h2>
+										<p>Product no. : <span id="product-id"> <!-- product's ID here --> </span> </p>
 										<p>Vehicle : <span id="product-vehicle"> <!-- product's VEHICLE here --> </span></p>
 										<h4 style="font-size: 2rem;">INR <span id="product-rate"> <!-- product's RATE here --> </span> per <span id="product-per"> <!-- product's PER here --> </span></h4>
 										<p>Minimum quantity : <span id="product-min-qty"> <!-- product's MINIMUM QUANTITY here --> </span></p>
@@ -103,13 +104,15 @@
 											<button type="button" id="buy-now-btn" class="btn btn-default"><span class="fa fa-credit-card">&nbsp;&nbsp;Buy now</span></button>
 										</div>
 
+									</div>
+
 										<div class="row" id="error-msg" class="error-msg-display" style="color: red; font-style: italic;" hidden>
 											<div class="col-lg-12 col-md-12">
 												Login to purchase or add product to cart.
 											</div>
 										</div>
 
-									</div>
+									
 									
 									<div id="product-desc" class="row" style="margin-top: 20px;" hidden>
 										<p><b>Description</b></p>

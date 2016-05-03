@@ -245,6 +245,7 @@ function setMainDisplayContainer(obj){
 						$('#product-img').attr('alt',product.name);
 
 						$('#product-name').html(product.name);
+						$('#product-id').html(product.product_id);
 
 						$('#product-vehicle').html(product.vehicle);
 						$('#product-rate').html(product.rate);
@@ -404,6 +405,13 @@ function addToCart(user, product_nicename, quantity){
 			console.log(data);
 			var reply = JSON.parse(data);
 			
+			if(data.status == "success" && (data.message).toUpperCase() == "added to cart.".toUpperCase()){
+				var cart_badge = $(".badge");
+				var cart_count = parseInt(cart_badge.html());
+
+				cart_badge.html(cart_count+1);
+			}
+
 			console.log(reply.status);
 			console.log(reply.message);
 			$('#error-msg').html(reply.message);
@@ -515,6 +523,13 @@ function calcCartTotalCost(output_obj){
 	}
 
 	output_obj.html(total.toFixed(3));
+}
+
+function showCartBadge(user){
+	$.getJSON("../server/count_cart.php?user="+user, function(data, status){
+		console.log(data.data);
+		$(".badge").html(data.data);
+	});
 }
 
 function finalizeCart(user){
@@ -881,7 +896,51 @@ function forgotPassword(email){
 
 
 function fetchUserProfile(user){
-	alert(1);
+	$.getJSON("../server/fetch_user_details.php?user="+user, function(data, status){
+		
+		if(status == "success"){
+			if(data.status == "success"){
+				var address = '';
+
+				$.each(data.data, function(i, user){
+
+					$("#user-name").html(user.name);
+
+					$("#user-contact").html(user.contact);
+
+					address = user.addressline1 + "<br/>";
+
+					if(user.addressline2 != "" && user.addressline2 != null){
+						address += user.addressline2 + "<br/>";
+					}
+
+					address += user.area + "<br/>";
+					address += user.town + "<br/>";
+					address += user.state + " - ";
+					address += user.pincode + "<br/>";
+					address += user.country + "<br/>";
+
+					$("#user-address").html(address);
+
+					if(user.meta_length > 0){
+						var tr = '';
+						var profile_extra_info_dom = $("#profile-extra-info");
+
+						$.each(user.meta_data, function(j, meta_data){
+							tr = "<tr><td>"+Object.keys(meta_data)+" : </td><td>"+meta_data[Object.keys(meta_data)]+"</td></tr>";
+							
+							profile_extra_info_dom.find(".table>tbody").append(tr);
+						});
+
+						profile_extra_info_dom.show();
+					}
+
+				});
+				
+			}
+		}
+
+	});
 }
 
 // ENDS User Related Functions
@@ -961,6 +1020,8 @@ function placeOrder(user, order_from, product, product_order_qty) {
 			product_order_qty = 0;
 		}
 
+		//window.location.href = "../server/place_order.php?user="+user+"&order_from="+order_from+"&product_nicename="+product+"&product_order_qty="+product_order_qty;
+
 		$.getJSON("../server/place_order.php?user="+user+"&order_from="+order_from+"&product_nicename="+product+"&product_order_qty="+product_order_qty,
 			function(data, status){
 				console.log(status);
@@ -975,6 +1036,7 @@ function placeOrder(user, order_from, product, product_order_qty) {
 				}
 				else{
 					alert(data.message);
+					console.log(data.message);
 				}
 			}
 		);
@@ -983,7 +1045,76 @@ function placeOrder(user, order_from, product, product_order_qty) {
 
 }
 
+function fetchOrderHistory(user){
+	$.getJSON("../server/fetch_order_history.php?user="+user, function(data, status){
+		console.log(data.status);
+		var order_accordion = $("#order-accordion");
+
+		if(data.status == "success"){			
+			var panel = '';
+			$.each(data.data, function(i, order){
+				panel = "<div class='panel panel-default'>";
+				panel += "<div class='panel-heading'>";
+				panel += "<div class='panel-title'>";
+				
+				panel += "<a data-toggle='collapse' data-parent='#order-accordion' href='#o"+i+"'>";
+				panel += "<table class='table'>";
+				panel += "<tbody>";
+				panel += "<tr>";
+				panel += "<td>"+order.sr_no+"</td><td>"+order.date_time+"</td><td>"+order.transaction_id+"</td><td>"+order.total_amount+"</td><td class='fa fa-chevron-down'></td>";
+				panel += "</tr>";
+				panel += "</tbody>";
+				panel += "</table>";
+				panel += "</a>";
+
+				panel += "</div>";	// panel-title closed
+				panel += "</div>";	// panel-heading closed
+
+				panel += "<div id='o"+i+"' class='panel-collapse collapse'>";
+				
+				panel += "<table class='table'>";
+				panel += "<thead>";
+				panel += "<tr>";
+				panel += "<th>Sr. no.</th><th>Product no.</th><th>Product name</th><th>Quantity</th><th>Cost</th><th>&nbsp;&nbsp;</th>";
+				panel += "</tr>";
+				panel += "</thead>";
+				panel += "<tbody>";
+
+				$.each(order.details, function(j, details){
+					panel += "<tr>";
+					panel += "<td>"+details.sr_no+"</td><td>"+details.product_id+"</td><td>"+details.product_name+"</td><td>"+details.quantity+"</td><td>"+(parseFloat(details.quantity) * parseFloat(details.rate)).toFixed(3)+"</td><td>&nbsp;&nbsp;</td>";
+					panel += "</tr>";
+				});
+
+				panel += "</tbody>";
+				panel += "</table>";
+				
+				
+				panel += "</div>"; // panel-collapse closed
+
+				panel += "</div>"; // panel closed
+
+				console.log(panel);
+
+				order_accordion.append(panel);
+			});
+		
+		}
+		else{
+			order_accordion.html("<br/><span style='font-style: italic; color: red;'>"+data.message+"</span>");
+		}
+
+	});
+}
+
 // ENDS Order Functions
+
+// User Profile Functions
+function editProfile(user){
+	$("#disp-profile-data").hide();
+	$("#edit-profile-data-form").show();
+}
+// ENDS User Profile Functions
 
 // Helper Methods
 

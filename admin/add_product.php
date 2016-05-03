@@ -43,7 +43,7 @@
               <div class="input-field col s12 l6">
                 <input  id="product_id" type="text" name="product_id" class="validate">
                 <label for="product_id">Product Id</label>
-                <span id="product_id_error" style="display: hidden;">Field cannot be empty</span>
+                <span id="product_id_error" hidden>Field cannot be empty</span>
               </div>
               <div class="col l3"><br/></div>
             </div>
@@ -52,7 +52,7 @@
               <div class="input-field col s12 l6">
                 <input id="product_name" type="text" name="product_name" class="validate">
                 <label for="product_name">Product Name</label>
-                <span id="product_name_error" style="display: hidden;">Field cannot be empty</span>
+                <span id="product_name_error" hidden>Field cannot be empty</span>
               </div>
               <div class="col l3"><br/></div>
             </div>
@@ -61,7 +61,7 @@
               <div class="input-field col s12 l6">
                 <input id="vehicle_name" type="text" name="vehicle_name" class="validate">
                 <label for="vehicle_name">Vehicle Name</label>
-                <span id="vehicle_name_error" style="display: hidden;">Field cannot be empty</span>
+                <span id="vehicle_name_error" hidden>Field cannot be empty</span>
               </div>
               <div class="col l3"><br/></div>
             </div>
@@ -70,7 +70,7 @@
               <div class="input-field col s12 l6">
                 <input id="product_description" type="text" name="product_description" class="validate">
                 <label for="product_description">Product Description</label>
-                <span id="product_description_error" style="display: hidden;">Field cannot be empty</span>
+                <span id="product_description_error" hidden>Field cannot be empty</span>
               </div>
               <div class="col l3"><br/></div>
             </div>
@@ -79,7 +79,7 @@
               <div class="input-field col s12 l6">
                 <input id="rate" type="text" name="rate" class="validate">
                 <label for="rate">Rate</label>
-                <span id="rate_error" style="display: hidden;">Field cannot be empty</span>
+                <span id="rate_error" hidden>Field cannot be empty</span>
               </div>
               <div class="col l3"><br/></div>
             </div>
@@ -101,7 +101,7 @@
               <div class="input-field col s12 l6">
                 <input id="min_quantity" type="text" name="min_quantity" class="validate">
                 <label for="min_quantity">Minimum Quantity</label>
-                <span id="min_quantity_error" style="display: hidden;">Field cannot be empty</span>
+                <span id="min_quantity_error" hidden>Field cannot be empty</span>
               </div>
               <div class="col l3"><br/></div>
             </div>
@@ -109,7 +109,7 @@
               <div class="col l3"><br/></div>
               <div class="input-field col s12 l6">
                 <div class="file-field input-field">
-                  <div class="btn">
+                  <div class="btn" style="background-color: #333399;">
                     <span>File</span>
                     <input type="file" name="product_img_file">
                   </div>
@@ -122,7 +122,7 @@
             </div>
             <div class="row">
               <center>
-                <button class="btn waves-effect waves-light" type="submit" name="" onclick="return validation();">Submit
+                <button class="btn waves-effect waves-light" type="submit" name="" onclick="return validation();" style="background-color: #333399;">Submit
                   <i class="material-icons right"></i>
                 </button>
               </center>

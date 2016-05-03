@@ -120,7 +120,7 @@
 				var json_data;
 				$.each(data, function(i, product){
 					if(product.id){
-						json_data = "<div class='col l3 m6 s6 center display_data_in_card'><a href='product_master.php?product="+product.nicename+"'><div class='div_with_bg_img' style='background: url(../"+product.img+");'><div class='div_text_item' style='height: 40px;'>"+product.name+"</div></div></a></div>";
+						json_data = "<div class='col l3 m6 s6 center display_data_in_card'><a href='product_master.php?product="+product.nicename+"'><div class='div_with_bg_img' style='background: url(../"+product.img+");'><div class='div_text_item' style='height: 50px;'>"+product.name+"</div></div></a></div>";
 						//json_data = "<div class='col l3 m6 s6 center display_data_in_card'><a href='product_master.php?product="+product.nicename+"'><img src='../"+product.img+"' alt='' class='responsive-img' style='border-bottom:1px solid #000; height: 150px; width: 220px; margin-bottom: 5px;'/></a><br/><center><span>"+product.name+"</span></center></div>";
 						$(json_data).appendTo('#display-product');
 					}
@@ -431,3 +431,67 @@ function deleteProduct(product, category){
 }
 
 // ENDS Product Master Page
+
+
+// Order History Page
+
+function fetchOrderHistory(user){
+
+	$.getJSON("../server/fetch_order_history.php", function(data, status){
+		
+		var order_accordion = $("#order-accordion");
+		
+		if(data.status == "success"){			
+			var panel = '';
+
+			$.each(data.data, function(i, order){
+				panel = "<li>";
+				panel += "<div class='collapsible-header'>";
+				
+					panel += "<table>";
+					panel += "<tbody>";
+					panel += "<tr>";
+					panel += "<td>"+order.sr_no+"</td><td>"+order.user_name+ "<br/> <a>"+order.user_email+"</a> </td><td>"+order.date_time+"</td><td>"+order.transaction_id+"</td><td>"+order.total_amount+"</td><td> <i class='material-icons'>expand_more</i> </td>";
+					panel += "</tr>";
+					panel += "</tbody>";
+					panel += "</table>";
+				
+				panel += "</div>";
+
+				panel += "<div id='o"+i+"' class='collapsible-body'>";
+				
+					panel += "<table>";
+					panel += "<thead>";
+					panel += "<tr>";
+					panel += "<th>Sr. no.</th><th>Product no.</th><th>Product name</th><th>Quantity</th><th>Cost</th><th>&nbsp;&nbsp;</th>";
+					panel += "</tr>";
+					panel += "</thead>";
+					panel += "<tbody>";
+
+					$.each(order.details, function(j, details){
+						panel += "<tr>";
+						panel += "<td>"+details.sr_no+"</td><td>"+details.product_id+"</td><td>"+details.product_name+"</td><td>"+details.quantity+"</td><td>"+(parseFloat(details.quantity) * parseFloat(details.rate)).toFixed(3)+"</td><td>&nbsp;&nbsp;</td>";
+						panel += "</tr>";
+					});
+
+					panel += "</tbody>";
+					panel += "</table>";
+				
+				
+				panel += "</div>"; // panel-collapse closed
+
+				panel += "</li>";
+
+				order_accordion.append(panel);
+			
+			});
+		
+		}
+		else{
+			order_accordion.html("<br/><span style='font-style: italic; color: red;'>"+data.message+"</span>");
+		}
+
+	});
+}
+
+// ENDS Order History Page

@@ -285,20 +285,51 @@ class DbConnection {
 			return $mail_reply;
     	}
 
-		function fetchUserDetails($user_id){
-			$sql = "select * from ".self::USER." where user_id = ".(int)$user_id.";";
+		function fetchUserDetails($user_email){
+			$sql = "select * from ".self::USER." where user_email = '$user_email';";
 			$result = self::$mysqli->query($sql);
+			
 			if(!$result){
-				return false;
-			}else{
-				 $row = $result->fetch_row();
-				if(!$row){
-					return false;
-				}else{
-					return $row;
+				return json_encode(array("status"=>"failed", "message"=>"No User Found. Signin and try again."));
+			}
+
+			$row = $result->fetch_array(MYSQLI_ASSOC);
+			
+			if(!$row){
+				return json_encode(array("status"=>"failed", "message"=>"No User Found. Signin and try again."));
+			}
+
+			$id = $row['id'];
+			$full_name = $row['user_name'];
+			$addressline1 = $row['user_address_line_1'];
+			$addressline2 = $row['user_address_line_2'];
+			$area = $row['user_area'];
+			$town = $row['user_town'];
+			$state = $row['user_state'];
+			$pincode = $row['user_pin_code'];
+			$country = $row['user_country'];
+			$contact_number = $row['user_contact_number'];
+
+			$sql = "select * from ".self::USER_META." where user_id=$id;";
+			$result = self::$mysqli->query($sql);
+
+			if(!$result){
+				return json_encode(array("status"=>"failed", "message"=>"Sory, some error occured. Signin and try again."));
+			}
+
+			$user_meta_num_rows = $result->num_rows;
+
+			$user_meta = null;
+
+			if($user_meta_num_rows){
+				while($row = $result->fetch_array(MYSQLI_BOTH)){
+					$user_meta[] = array($row['meta_key']=>$row['meta_value']);
 				}
 			}
-			return false;
+
+			$user_detail[] = array("name"=>$full_name, "contact"=>$contact_number, "addressline1"=>$addressline1, "addressline2"=>$addressline2, "area"=>$area, "town"=>$town, "state"=>$state, "pincode"=>$pincode, "country"=>$country, "meta_length"=>$user_meta_num_rows, "meta_data"=>$user_meta);
+
+			return json_encode(array( "status"=>"success", "message"=>"All records fetched.", "data"=>$user_detail ));
 		}
 		
 		function updateUserDetails($user_id, $user_name, $user_address, $user_contact_number){
@@ -381,24 +412,6 @@ class DbConnection {
 		return false;
 	}
 
-	function fetchUserMetaRecord($user_id){
-		$sql = "select meta_key, meta_value from ".self::USER_META." where user_id = ".(int)$user_id.";";
-		$result = self::$mysqli->query($sql);
-		$final_result = array();
-		$row="";
-
-		if(!$result){
-			return false;
-		}else{
-			$i = 0;
-			while($row = $result->fetch_array(MYSQLI_BOTH)){
-				$final_result[$i] = $row;
-				$i = $i + 1;
-			}
-			return $final_result;
-		}
-		return false;
-	}
 	// End User_Meta Functions
 		
 	// Category Functions
@@ -1076,76 +1089,90 @@ class DbConnection {
 
 		if($order_from == "cart"){
 			
-			$sql_cart = "select p.product_rate, c.* from ".self::CART." c INNER JOIN ".self::PRODUCT." p on p.id=c.product_id where c.user_id=$user_id;";
-			$result_cart = self::$mysqli->query($sql_cart);
+			// Check if records exist in cart
+				$sql = "select count(*) from ".self::CART." where user_id=$user_id;";
+				$result = self::$mysqli->query($sql);
 
-			if(!$result){
-				return json_encode(array("status"=>"failed", "message"=>"C1. Could not place your order. Please try again."));
-			}
+				if(!$result){
+					return json_encode(array("status"=>"failed", "message"=>"C0. Could not place your order. Please try again. "));
+				}
+				if($result->num_rows < 1){
+					return json_encode(array("status"=>"failed", "message"=>"Empty Cart. Add product(s) to cart before making any purchase."));
+				}
 
-			$sql_order = "insert into `".self::ORDER."` (`user_id`, `order_created_at`, `order_status`) values($user_id, NOW(), 'pending');";
-			$result_order = self::$mysqli->query($sql_order);
 
-			$last_insert_id = 0;
-			
-			if(!$result_order){
-				return json_encode(array("status"=>"failed", "message"=>"C2. Could not place your order. Please try again. ".self::$mysqli->error ));
-			}
-					
-			$last_insert_id = self::$mysqli->insert_id;
+			//Insert into 'ORDER' table
+				$sql = "insert into `".self::ORDER."` (`user_id`, `order_created_at`, `order_status`) values($user_id, NOW(), 'pending');";
+				$result = self::$mysqli->query($sql);
 
-			$sql_order = "UPDATE `".self::ORDER."` SET `order_transaction_id` = concat(
-					substring('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', rand(@seed:=round(rand($last_insert_id)*4294967296))*36+1, 1),
-					substring('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', rand(@seed:=round(rand(@seed)*4294967296))*36+1, 1),
-					substring('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', rand(@seed:=round(rand(@seed)*4294967296))*36+1, 1),
-					substring('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', rand(@seed:=round(rand(@seed)*4294967296))*36+1, 1),
-					substring('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', rand(@seed:=round(rand(@seed)*4294967296))*36+1, 1),
-					substring('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', rand(@seed:=round(rand(@seed)*4294967296))*36+1, 1),
-					substring('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', rand(@seed:=round(rand(@seed)*4294967296))*36+1, 1),
-					substring('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', rand(@seed)*36+1, 1)
-				)
-				WHERE `id` = $last_insert_id ;";
-
-			$result_order = self::$mysqli->query($sql_order);
-			if(!$result_order){
-				return json_encode(array("status"=>"failed", "message"=>"C3. Could not place your order. Please try again."));
-			}
-			
-			$sql = '';
-			$order_total = 0;
-
-			while($row_cart = $result_cart->fetch_array(MYSQLI_BOTH)){
-			
-				$product_id = $row_cart['product_id'];
-				$cart_qty = $row_cart['cart_qty'];
-				$product_total_cost = $row_cart['cart_product_cost'];
-				$product_rate = $row_cart['product_rate'];
-
-				$order_total += $product_total_cost;
-
-				$sql .= "insert into `".self::ORDER_DETAILS."` (`order_id`, `product_id`, `order_details_product_quantity`, `order_details_product_rate`) values($last_insert_id, $product_id, $cart_qty, $product_rate);";
-			
-			}
-
-			$result = self::$mysqli->multi_query($sql);
+				$last_insert_id = 0;
 				
-			if(!$result){
-				return json_encode(array("status"=>"failed", "message"=>"C4. Could not place your order. Please try again."));
-			}
+				if(!$result){
+					return json_encode(array("status"=>"failed", "message"=>"C1. Could not place your order. Please try again."));
+				}
+				
+				// Get autoincrement id from last insert
+					$last_insert_id = self::$mysqli->insert_id;
+
+			// Update 'ORDER' table to add 'order_transaction_id' value
+				$sql = "UPDATE `".self::ORDER."` SET `order_transaction_id` = concat(
+						substring('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', rand(@seed:=round(rand($last_insert_id)*4294967296))*36+1, 1),
+						substring('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', rand(@seed:=round(rand(@seed)*4294967296))*36+1, 1),
+						substring('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', rand(@seed:=round(rand(@seed)*4294967296))*36+1, 1),
+						substring('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', rand(@seed:=round(rand(@seed)*4294967296))*36+1, 1),
+						substring('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', rand(@seed:=round(rand(@seed)*4294967296))*36+1, 1),
+						substring('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', rand(@seed:=round(rand(@seed)*4294967296))*36+1, 1),
+						substring('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', rand(@seed:=round(rand(@seed)*4294967296))*36+1, 1),
+						substring('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', rand(@seed)*36+1, 1)
+					)
+					WHERE `id` = $last_insert_id ;";
+
+				$result = self::$mysqli->query($sql);
+				if(!$result){
+					return json_encode(array("status"=>"failed", "message"=>"C2. Could not place your order. Please try again."));
+				}
+
+			//Fetch data from cart
+				$sql = "select p.product_rate, c.* from ".self::CART." c INNER JOIN ".self::PRODUCT." p on p.id=c.product_id where c.user_id=$user_id;";
+				$result = self::$mysqli->query($sql);
+
+				if(!$result){
+					return json_encode(array("status"=>"failed", "message"=>"C3. Could not place your order. Please try again."));
+				}
 			
-			$sql_order = "UPDATE `".self::ORDER."` SET `order_total_amount`=$order_total where `id`=$last_insert_id;";
-			$result_order = self::$mysqli->query($sql_order);
+				$order_total = 0;
 
-			if(!$result_order){
-				return json_encode(array("status"=>"failed", "message"=>"C5. Could not place your order. Please try again."));
-			}
+				while($row = $result->fetch_array(MYSQLI_ASSOC)){
+			
+					$product_id = $row['product_id'];
+					$cart_qty = $row['cart_qty'];
+					$product_total_cost = $row['cart_product_cost'];
+					$product_rate = $row['product_rate'];
 
-			$sql = "delete from ".self::CART." where user_id=$user_id;";
-			$result = self::$mysqli->query($sql);
+					$order_total += $product_total_cost;
 
-			if(!$result){
-				return json_encode(array("status"=>"failed", "message"=>"C6. Could not place your order. Please try again. ".self::$mysqli->error));
-			}
+					$sql_1 = "insert into `".self::ORDER_DETAILS."` (`order_id`, `product_id`, `order_details_product_quantity`, `order_details_product_rate`) values($last_insert_id, $product_id, $cart_qty, $product_rate);";
+
+					$result_1 = self::$mysqli->query($sql_1) or trigger_error(self::$mysqli->error);
+			
+				}
+			
+			// Update 'ORDER' table to add 'order_total_amount' value
+				$sql = "UPDATE `".self::ORDER."` SET `order_total_amount`=$order_total where `id`=".$last_insert_id.";";
+				
+				$result = self::$mysqli->query($sql);
+
+				if(!$result){
+					return json_encode(array("status"=>"failed", "message"=>"C6. Could not place your order. Please try again.".self::$mysqli->error));
+				}
+
+			// Delete records from 'CART' table
+				$sql = "delete from ".self::CART." where user_id=$user_id;";
+				$result = self::$mysqli->query($sql);
+
+				if(!$result){
+					return json_encode(array("status"=>"failed", "message"=>"C7. Could not place your order. Please try again. ".self::$mysqli->error));
+				}
 
 			return json_encode(array("status"=>"success", "message"=>"Thank you for purchasing from R.R. Sales Corporation. <br/>You can see your order details in your profile."));
 			
@@ -1166,7 +1193,9 @@ class DbConnection {
 			$p_id = $row['id'];
 			$p_rate = $row['product_rate'];
 
-			$sql = "insert into `".self::ORDER."` (`user_id`, `order_created_at`, `order_status`) values($user_id, NOW(), 'pending');";
+			$order_total = (float)$product_order_qty * (float)$p_rate;
+
+			$sql = "insert into `".self::ORDER."` (`user_id`, `order_created_at`, `order_total_amount`, `order_status`) values($user_id, NOW(), $order_total,'pending');";
 			$result = self::$mysqli->query($sql);
 
 			if(!$result){
@@ -1204,6 +1233,114 @@ class DbConnection {
 
 		}
 		
+	}
+
+
+	function fetchOrderHistory($type, $user_email){
+		if($type == "user"){
+			
+			$sql = "select id, user_id, order_total_amount, order_transaction_id, order_status, DATE_FORMAT(`order_created_at`, '%d - %M - %Y') as order_created_at from `".self::ORDER."` where `user_id` = (select `id` from `".self::USER."` where `user_email`='$user_email') order by DATE_FORMAT(`order_created_at`, '%Y-%m-%d') asc;";
+			
+			$result = self::$mysqli->query($sql);
+
+			if(!$result){
+				return json_encode(array("status"=>"failed", "message"=>"You have made no orders till date."));
+			}
+
+			if($result->num_rows < 1){
+				return json_encode(array("status"=>"failed", "message"=>"You have made no orders till date."));
+			}
+
+			$order_arr = array();
+			
+			$i = 1;
+
+			while($row = $result->fetch_array(MYSQLI_ASSOC)){
+
+				$sql = "select p.product_id as pid, p.product_name, o.* from ".self::ORDER_DETAILS." o inner join ".self::PRODUCT." p on o.product_id=p.id where o.order_id=".$row['id'].";";
+
+				
+				$result_2 = self::$mysqli->query($sql);
+
+				if(!$result_2){
+					return json_encode(array("status"=>"failed", "message"=>"You have made no orders till date."));
+				}
+
+				$j = 1;
+				$order_details_arr = array();
+				while($row_2 = $result_2->fetch_array(MYSQLI_ASSOC)){
+					$order_details_arr[] = array("sr_no"=>$j, "product_id"=>$row_2['pid'], "product_name"=>$row_2['product_name'], "quantity"=>$row_2['order_details_product_quantity'], "rate"=>$row_2['order_details_product_rate']);
+					$j = (int)$j + 1;
+				}
+
+				$order_arr[] = array("sr_no"=>$i, "date_time"=>$row['order_created_at'], "total_amount"=>$row['order_total_amount'], "transaction_id"=>$row['order_transaction_id'], "status"=>$row['order_status'], "details"=>$order_details_arr);
+
+				$i++;
+			}
+
+			return json_encode( array("status"=>"success", "message"=>"All records fetched", "data"=>$order_arr) );
+
+		}
+		else if($type == "user_role"){
+
+			$sql = "select u.*, o.id, o.user_id, o.order_total_amount, o.order_transaction_id, o.order_status, DATE_FORMAT(o.`order_created_at`, '%d - %M - %Y') as order_created_at from `".self::ORDER."` o inner join `".self::USER."` u on o.user_id=u.id order by DATE_FORMAT(o.`order_created_at`, '%Y-%m-%d') asc;";
+			
+			$result = self::$mysqli->query($sql);
+
+			if(!$result){
+				return json_encode(array("status"=>"failed", "message"=>"No orders have been made."));
+			}
+
+			if($result->num_rows < 1){
+				return json_encode(array("status"=>"failed", "message"=>"No orders have been made."));
+			}
+
+			$order_arr = array();
+			
+			$i = 1;
+
+			while($row = $result->fetch_array(MYSQLI_ASSOC)){
+
+				$user_name = $row['user_name'];
+				$user_email = $row['user_email'];
+
+				$sql = "select p.product_id as pid, p.product_name, o.* from ".self::ORDER_DETAILS." o inner join ".self::PRODUCT." p on o.product_id=p.id where o.order_id=".$row['id'].";";
+				
+				$result_2 = self::$mysqli->query($sql);
+
+				if(!$result_2){
+					return json_encode(array("status"=>"failed", "message"=>"No orders have been made."));
+				}
+
+				$j = 1;
+				$order_details_arr = array();
+				while($row_2 = $result_2->fetch_array(MYSQLI_ASSOC)){
+					$order_details_arr[] = array("sr_no"=>$j, "product_id"=>$row_2['pid'], "product_name"=>$row_2['product_name'], "quantity"=>$row_2['order_details_product_quantity'], "rate"=>$row_2['order_details_product_rate']);
+					$j = (int)$j + 1;
+				}
+
+				$order_arr[] = array("sr_no"=>$i, "user_name"=>$user_name, "user_email"=>$user_email ,"date_time"=>$row['order_created_at'], "total_amount"=>$row['order_total_amount'], "transaction_id"=>$row['order_transaction_id'], "status"=>$row['order_status'], "details"=>$order_details_arr);
+
+				$i++;
+			}
+
+			return json_encode( array("status"=>"success", "message"=>"All records fetched", "data"=>$order_arr) );
+
+		}
+	}
+
+	function countCart($user_email){
+		$sql = "select count(*) from ".self::CART." where user_id=(select id from ".self::USER." where user_email='$user_email');";
+		$result = self::$mysqli->query($sql);
+
+		if(!$result){
+			return json_encode(array("status"=>"failed", "message"=>"Some error occured. Try again."));
+		}
+
+		$row = $result->fetch_array(MYSQLI_BOTH);
+		$cart_count = $row[0];
+
+		return json_encode(array("status"=>"success", "message"=>"Success", "data"=>$cart_count));
 	}
 
 	// End Order Functions

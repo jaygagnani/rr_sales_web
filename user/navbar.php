@@ -18,8 +18,8 @@ if(session_status() == PHP_SESSION_NONE)
 		text-transform: uppercase;
 	}
 
-	navbar>.icon-bar{
-		background-color: #000;
+	.navbar-toggle .icon-bar{
+		background-color: #fff;
 	}
 
 	[class*="col-"]{
@@ -81,19 +81,6 @@ if(session_status() == PHP_SESSION_NONE)
 			<div class="col-lg-10 col-md-10 col-sm-9" style="padding-left: 55px;">
 				<div class="collapse navbar-collapse row" id="side-navbar" style="margin-top: 10px;">
 					
-					<?php
-						if(isset($_SESSION['user'])){
-					?>
-						<div class="row">
-							<div class="col-lg-10"></div>
-							<div class="col-lg-2">
-								<a href="#!" onclick="alert(1);" style="float: left;"><b><span class="fa fa-shopping-user">&nbsp; Hello <?php echo explode(' ', $_SESSION['user_name'], 2)[0]; ?></span></b></a>
-							</div>
-						</div>
-					<?php
-						}
-					?>
-					
 					<ul class="nav navbar-nav col-lg-12 col-md-12 col-sm-12">
 						<li class="col-lg-6 col-md-4 col-sm-3" style="text-align: center;">
 							<div class="form-group">
@@ -117,14 +104,6 @@ if(session_status() == PHP_SESSION_NONE)
 
 								<a href="./destroy_session.php?session=<?php echo session_id(); ?>&session_var=user" id="signout-link"><b><span class="fa fa-unlock">&nbsp; Sign out</span></b></a>	
 
-								<script type="text/javascript">
-									// $("#signout-link").on("click", function(){
-									// 	$.ajax({
-									// 		url: "../server/"
-									// 	})
-									// });
-								</script>
-
 							<?php
 								}
 
@@ -132,26 +111,36 @@ if(session_status() == PHP_SESSION_NONE)
 
 						</li>
 						<li class="col-lg-1.5 col-md-1.5" style="text-align: right;">
-							<a href="#"><b><span class="fa fa-phone">&nbsp; Contact</span></b></a>
+							<a href="./contact.php"><b><span class="fa fa-phone">&nbsp; Contact</span></b></a>
 						</li>
 						<li class="col-lg-1.5 col-md-1.5" style="text-align: right;">
-							<a href="#" id="cart-btn"><b><span class="fa fa-shopping-cart">&nbsp; Cart</span></b></a>
+							<a href="#" id="cart-btn">
+								<b><span class="fa fa-shopping-cart">&nbsp; Cart 
+									<span class="badge"></span>
+								</span></b></a>
 						</li>
 
 					</ul>
 
-					<?php
-						if(!isset($_SESSION['user'])){
-					?>
-						<div class="row">
-							<div class="col-lg-8"></div>
-							<div class="col-lg-4">
-								<a href="#!" onclick="window.location.href='./register.php';" style="float: left; text-transform: none;"><b><span class="fa fa-shopping-user">&nbsp; Not registered? <b> SIGN UP </b></span></b></a>
-							</div>
+					
+					<div class="row">
+						<div class="col-lg-8"></div>
+						<div class="col-lg-4">
+							<?php
+								if(!isset($_SESSION['user'])){
+							?>
+									<a href="#!" onclick="window.location.href='./register.php';" style="float: left; text-transform: none;"><b><span class="fa fa-shopping-user">&nbsp; Not registered? <b> SIGN UP </b></span></b></a>
+							<?php
+								}
+								else{
+							?>
+								<a href="./profile.php" id="user-profile-link" style="float: left;">Welcome <?php echo explode(' ', $_SESSION['user_name'], 2)[0]; ?></a>
+							<?php
+								}
+							?>
+
 						</div>
-					<?php
-						}
-					?>
+					</div>
 
 				</div>
 			</div>
@@ -220,7 +209,7 @@ if(session_status() == PHP_SESSION_NONE)
     	<div class="modal-content">
       		<div class="modal-header">
         		<button type="button" class="close" data-dismiss="modal">&times;</button>
-        		<h4 class="modal-title">Sign In</h4>
+        		<h4 class="modal-title">Reset Password</h4>
       		</div>
       		<div class="modal-body">
       			<center>
@@ -270,13 +259,22 @@ if(session_status() == PHP_SESSION_NONE)
 		$("#error").hide();
 
 		if("<?php if(isset($_SESSION['user'])) {echo 'true';} else{echo 'false';} ?>" == "true"){
+			
+			$(".badge").show();
+			$(".badge").html(0);
+
+			showCartBadge("<?php if(isset($_SESSION['user'])) {echo $_SESSION['user'];} ?>");
+
 			$('#cart-btn').on("click", function(){
 				window.location = './cart.php';
 			});
+
 		}else{
+
 			$('#cart-btn').on("click", function(){
 				alert("Please login to access your cart.");
 			});
+
 		}
 
 		$("#forgot-password-btn").on("click", function(){
