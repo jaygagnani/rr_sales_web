@@ -445,28 +445,20 @@ function fetchOrderHistory(user){
 			var panel = '';
 
 			$.each(data.data, function(i, order){
-				panel = "<li>";
+				panel += "<li>";
 				panel += "<div class='collapsible-header'>";
 				
-					panel += "<table>";
-					panel += "<tbody>";
-					panel += "<tr>";
+					panel += "<table> <tbody> <tr>";
 					panel += "<td>"+order.sr_no+"</td><td>"+order.user_name+ "<br/> <a>"+order.user_email+"</a> </td><td>"+order.date_time+"</td><td>"+order.transaction_id+"</td><td>"+order.total_amount+"</td><td> <i class='material-icons'>expand_more</i> </td>";
-					panel += "</tr>";
-					panel += "</tbody>";
-					panel += "</table>";
+					panel += "</tr> </tbody> </table>";
 				
 				panel += "</div>";
 
 				panel += "<div id='o"+i+"' class='collapsible-body'>";
 				
-					panel += "<table>";
-					panel += "<thead>";
-					panel += "<tr>";
+					panel += "<p><table> <thead> <tr>";
 					panel += "<th>Sr. no.</th><th>Product no.</th><th>Product name</th><th>Quantity</th><th>Cost</th><th>&nbsp;&nbsp;</th>";
-					panel += "</tr>";
-					panel += "</thead>";
-					panel += "<tbody>";
+					panel += "</tr> </thead> <tbody>";
 
 					$.each(order.details, function(j, details){
 						panel += "<tr>";
@@ -474,18 +466,22 @@ function fetchOrderHistory(user){
 						panel += "</tr>";
 					});
 
-					panel += "</tbody>";
-					panel += "</table>";
+					panel += "</tbody> </table> </p>";
 				
 				
 				panel += "</div>"; // panel-collapse closed
 
 				panel += "</li>";
 
-				order_accordion.append(panel);
+				
 			
 			});
 		
+			order_accordion.append(panel);
+			$('.collapsible').collapsible({
+				accordian: true
+			});
+
 		}
 		else{
 			order_accordion.html("<br/><span style='font-style: italic; color: red;'>"+data.message+"</span>");

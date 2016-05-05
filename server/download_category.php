@@ -1,6 +1,6 @@
 <?php
 require_once './db_config.php';
-require './fpdf/fpdf.php';
+require './fpdf/fpdf_download_catalogue.php';
 
 $db = new DbConnection;
 

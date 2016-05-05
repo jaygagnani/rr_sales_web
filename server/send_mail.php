@@ -17,6 +17,9 @@ if(isset($_REQUEST['pwd'])){
 if($_REQUEST['operation'] == "register"){
 	$result = $db->sendNewRegisterMail($email, $password);
 }
+else if($_REQUEST['operation'] == "invoice"){
+	$result = $db->sendInvoiceMail($email, $order_id);
+}
 
 print_r($result);
 

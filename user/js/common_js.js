@@ -906,12 +906,24 @@ function fetchUserProfile(user){
 
 					$("#user-name").html(user.name);
 
+					// For textboxes in edit profile
+					$("#edit-name").val(user.name);
+
 					$("#user-contact").html(user.contact);
+
+					// For textboxes in edit profile
+					$("#edit-contact").val(user.contact);
 
 					address = user.addressline1 + "<br/>";
 
+					// For textboxes in edit profile
+					$("#edit-address-line1").val(user.addressline1);
+
 					if(user.addressline2 != "" && user.addressline2 != null){
 						address += user.addressline2 + "<br/>";
+
+						// For textboxes in edit profile
+						$("#edit-address-line2").val(user.addressline2);
 					}
 
 					address += user.area + "<br/>";
@@ -919,6 +931,15 @@ function fetchUserProfile(user){
 					address += user.state + " - ";
 					address += user.pincode + "<br/>";
 					address += user.country + "<br/>";
+
+
+				// For textboxes in edit profile
+					$("#edit-area").val(user.area);
+					$("#edit-town").val(user.town);
+					$("#edit-state").val(user.state);
+					$("#edit-pincode").val(user.pincode);
+					$("#edit-country").val(user.country);
+				// End for textboxes in edit profile
 
 					$("#user-address").html(address);
 
@@ -1024,20 +1045,20 @@ function placeOrder(user, order_from, product, product_order_qty) {
 
 		$.getJSON("../server/place_order.php?user="+user+"&order_from="+order_from+"&product_nicename="+product+"&product_order_qty="+product_order_qty,
 			function(data, status){
-				console.log(status);
+				
 				if(data.status == "success"){
-					if(confirm(data.message)){
-						window.location.href = "./";
-					}
-					else{
-						window.location.href = "./";
-					}
-					
+					console.log("data : " + data.data);
+
+					// __sendInvoiceMail(user, data.data);
+					$.getJSON("../server/mail_order_invoice.php?user="+user+"&order="+data.data, function(mail_reply, status){
+						alert(mail_reply);
+					});
+
 				}
 				else{
 					alert(data.message);
-					console.log(data.message);
 				}
+
 			}
 		);
 
@@ -1094,8 +1115,6 @@ function fetchOrderHistory(user){
 
 				panel += "</div>"; // panel closed
 
-				console.log(panel);
-
 				order_accordion.append(panel);
 			});
 		
@@ -1114,6 +1133,333 @@ function editProfile(user){
 	$("#disp-profile-data").hide();
 	$("#edit-profile-data-form").show();
 }
+
+function updateUserDetails(user, event){
+
+	event.preventDefault();
+
+	var name = $("#edit-name");
+	var contact = $("#edit-contact");
+	var addressline1 = $("#edit-address-line1");
+	var addressline2 = $("#edit-address-line2");
+	var area = $("#edit-area");
+	var town = $("#edit-town");
+	var state = $("#edit-state");
+	var pincode = $("#edit-pincode");
+	var country = $("#edit-country");
+	var old_pwd = $("#edit-old-password");
+	var new_pwd = $("#edit-new-password");
+
+	var error_msg_dom = $("#edit-error-msg");
+
+	var flag = "true";
+
+	var pattern = / /;
+
+	pattern = /^[a-zA-Z\s*]+$/;
+	
+	// validate name
+	if($.trim(name.val()) == ''){
+		error_msg_dom.html("Name cannot be empty.");
+
+		flag = "false";
+
+		location.hash = "edit-error-msg";
+
+		return flag;
+	}
+	else{
+		if(! pattern.test(name.val()) ){
+			error_msg_dom.html("Name should contain only alphabets.");
+
+			flag = "false";
+
+			location.hash = "edit-error-msg";
+
+			return flag;
+		}
+	}
+
+	// validate contact
+	if($.trim(contact.val()) == ''){
+		error_msg_dom.html("Contact cannot be empty.");
+
+		flag = "false";
+
+		location.hash = "edit-error-msg";
+
+		return flag;
+	}
+	else{
+		pattern = /^[0-9]+$/;
+		if(! pattern.test(contact.val()) ){
+			error_msg_dom.html("Contact should contain only digits 0-9.");
+
+			flag = "false";
+
+			location.hash = "edit-error-msg";
+
+			return flag;
+		}
+	}
+
+	// validate address line 1
+	if($.trim(addressline1.val()) == ''){
+		error_msg_dom.html("Address line 1 cannot be empty.");
+
+		flag = "false";
+
+		location.hash = "edit-error-msg";
+
+		return flag;
+	}
+	else{
+		pattern = /^[a-zA-Z0-9\s*]+$/;
+		if(! pattern.test(addressline1.val()) ){
+			error_msg_dom.html("Address Line 1 should contain only alphabets and digits. No symbols are allowed");
+
+			flag = "false";
+
+			location.hash = "edit-error-msg";
+
+			return flag;
+		}
+	}
+
+	// validate address line 2
+	if(! $.trim(addressline2.val()) == ''){
+		pattern = /^[a-zA-Z0-9\s*]+$/;
+
+		if(! pattern.test(addressline2.val()) ){
+			error_msg_dom.html("Address Line 2 should contain only alphabets and digits. No symbols are allowed");
+
+			flag = "false";
+
+			location.hash = "edit-error-msg";
+
+			return flag;
+		}
+	}
+
+	// validate area
+	if($.trim(area.val()) == ''){
+		error_msg_dom.html("Area cannot be empty.");
+
+		flag = "false";
+
+		location.hash = "edit-error-msg";
+
+		return flag;
+	}
+	else{
+		pattern = /^[a-zA-Z\s*]+$/;
+		if(! pattern.test(area.val()) ){
+			error_msg_dom.html("Area should contain only alphabets.");
+
+			flag = "false";
+
+			location.hash = "edit-error-msg";
+
+			return flag;
+		}
+	}
+
+	// validate town
+	if($.trim(town.val()) == ''){
+		error_msg_dom.html("Town cannot be empty.");
+
+		flag = "false";
+
+		location.hash = "edit-error-msg";
+
+		return flag;
+	}
+	else{
+		pattern = /^[a-zA-Z\s*]+$/;
+		if(! pattern.test(town.val()) ){
+			error_msg_dom.html("Town should contain only alphabets.");
+
+			flag = "false";
+
+			location.hash = "edit-error-msg";
+
+			return flag;
+		}
+	}
+
+	// validate state
+	if($.trim(state.val()) == ''){
+		error_msg_dom.html("State cannot be empty.");
+
+		flag = "false";
+
+		location.hash = "edit-error-msg";
+
+		return flag;
+	}
+	else{
+		pattern = /^[a-zA-Z\s*]+$/;
+		if(! pattern.test(state.val()) ){
+			error_msg_dom.html("State should contain only alphabets.");
+
+			flag = "false";
+
+			location.hash = "edit-error-msg";
+
+			return flag;
+		}
+	}
+
+	// validate pincode
+	if($.trim(pincode.val()) == ''){
+		error_msg_dom.html("Pincode cannot be empty.");
+
+		flag = "false";
+
+		location.hash = "edit-error-msg";
+
+		return flag;
+	}
+	else{
+		pattern = /^[0-9]+$/;
+		if(! pattern.test(pincode.val()) ){
+			error_msg_dom.html("Pincode should contain only digits between 0-9.");
+
+			flag = "false";
+
+			location.hash = "edit-error-msg";
+
+			return flag;
+		}
+		else if( pincode.val().length != 6 ){
+			alert( pincode.val().length );
+			error_msg_dom.html("Pincode should only contain 6 digits in length.");
+
+			flag = "false";
+
+			location.hash = "edit-error-msg";
+
+			return flag;
+		}
+	}
+
+	// validate country
+	if($.trim(country.val()) == ''){
+		error_msg_dom.html("Country cannot be empty.");
+
+		flag = "false";
+
+		location.hash = "edit-error-msg";
+
+		return flag;
+	}
+	else{
+		pattern = /^[a-zA-Z\s*]+$/;
+		if(! pattern.test(country.val()) ){
+			error_msg_dom.html("Country should contain only alphabets.");
+
+			flag = "false";
+
+			location.hash = "edit-error-msg";
+
+			return flag;
+		}
+	}
+
+	// validate old password
+	
+	if($.trim(old_pwd.val()) == '' && $.trim(new_pwd.val()) == ''){
+		// Do nothing
+	}
+	else if($.trim(old_pwd.val()) == '' && $.trim(new_pwd.val()) != ''){
+		error_msg_dom.html("Old password cannot be empty.");
+
+		flag = "false";
+
+		location.hash = "edit-error-msg";
+
+		return flag;
+	}
+	else if($.trim(old_pwd.val()) != '' && $.trim(new_pwd.val()) == ''){
+		error_msg_dom.html("New password cannot be empty.");
+
+		flag = "false";
+
+		location.hash = "edit-error-msg";
+
+		return flag;
+	}
+	else{
+		if(old_pwd.val() == new_pwd.val()){
+			error_msg_dom.html("Old and new password cannot be same.");
+
+			flag = "false";
+
+			location.hash = "edit-error-msg";
+
+			return flag;
+		}
+		else{
+			pattern = /^[a-zA-Z0-9]+$/;
+			if(! pattern.test(new_pwd.val()) ){
+				error_msg_dom.html("New password should only be a combination of alphanumeric charaters.");
+
+				flag = "false";
+
+				location.hash = "edit-error-msg";
+
+				return flag;
+			}
+		}
+		
+	}
+
+	if(flag == "false"){
+		console.log("false");
+	}
+	else{
+		console.log("true");
+
+		error_msg_dom.html('');
+		error_msg_dom.hide();
+
+		//window.location.href = "../server/update_user_details.php?user="+user+"&name="+name.val()+"&contact="+contact.val()+"&addressline1="+addressline1.val()+"&addressline2="+addressline2.val()+"&area="+area.val()+"&town="+town.val()+"&state="+state.val()+"&pincode="+pincode.val()+"&country="+country.val()+"&old_pwd="+old_pwd.val()+"&new_pwd="+new_pwd.val();
+
+		// alert("name="+name.val()+"\ncontact="+contact.val()+"\naddressline1="+addressline1.val()+"\naddressline2="+addressline2.val()+"\narea="+area.val()+"\ntown="+town.val()+"\nstate="+state.val()+"\npincode="+pincode.val()+"\ncountry="+country.val()+"\nold_pwd="+old_pwd.val()+"\nnew_pwd="+new_pwd.val());
+
+		// +"&name="+name.val()+"&contact="+contact.val()+"&addressline1="+addressline1.val()+"&addressline2="+addressline2.val()+"&area="+area.val()+"&town="+town.val()+"&state="+state.val()+"&pincode="+pincode.val()+"&country="+country.val()+"&old_pwd="+old_pwd.val()+"&new_pwd="+new_pwd.val()
+	
+		$.getJSON("../server/update_user_details.php", 
+			{
+				"user": user,
+				"name": name.val(),
+				"contact": contact.val(),
+				"addressline1": addressline1.val(),
+				"addressline2": addressline2.val(),
+				"area": area.val(),
+				"town": town.val(),
+				"state": state.val(),
+				"pincode": pincode.val(),
+				"country": country.val(),
+				"old_pwd": old_pwd.val(),
+				"new_pwd": new_pwd.val()
+			},
+			function(data, status){
+				if(data.status == "success"){
+					window.location.reload();
+				}
+				else{
+					error_msg_dom.html(data.message);
+					error_msg_dom.show();
+					location.hash = "edit-error-msg";
+				}
+			}
+		);
+
+	}
+
+}
+
 // ENDS User Profile Functions
 
 // Helper Methods
@@ -1156,6 +1502,12 @@ function __sendMail(url, email, pwd, dom_obj, operation){
 			return true;
 		}
 	);
+}
+
+function __sendInvoiceMail(user, order_id){
+	$.getJSON("../server/mail_order_invoice.php?user="+user+"&order_id="+order_id, function(data, status){
+		console.log(data);
+	});
 }
 
 function size(obj) {

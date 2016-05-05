@@ -21,7 +21,7 @@ function sendMail($email_to, $subject, $content){
 
 	$mail->Subject = $subject;
 
-	$mail->WordWrap   = 80;
+	$mail->WordWrap   = 200;
 
 	$mail->MsgHTML($content);
 

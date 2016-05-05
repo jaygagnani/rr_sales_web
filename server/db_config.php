@@ -194,12 +194,7 @@ class DbConnection {
 			print_r($mail_reply);
 			return $mail_reply;
 		}
-
-		function activateUser($user_id, $user_activation_code){
-			$sql = "update ".self::USER." set user_activation_code='$user_activation_code'";
-		}
 		
-
 		function loginUser($user_email, $user_password){
 			$sql = "select * from ".self::USER." where user_email = '$user_email' and user_password = '".md5($user_password)."';";
 			$result = self::$mysqli->query($sql);
@@ -332,14 +327,43 @@ class DbConnection {
 			return json_encode(array( "status"=>"success", "message"=>"All records fetched.", "data"=>$user_detail ));
 		}
 		
-		function updateUserDetails($user_id, $user_name, $user_address, $user_contact_number){
-			$sql = "update ".self::USER." set user_name = '$user_name', user_address = '$user_address', user_contact_number = '$user_contact_number' where id = ".(int)$user_id.";";
+		function updateUserDetails($user_email, $name, $contact, $addressline1, $addressline2,  $area, $town, $state, $pincode, $country, $old_pwd, $new_pwd){
+
+			$sql = "select id, user_password from ".self::USER." where user_email='$user_email';";
+			$result = self::$mysqli->query($sql);
+
+			if(!$result){
+				return json_encode(array("status"=>"failed", "message"=>"0. Sorry, some error occured. Your account details were not updated. Please try again."));
+			}
+
+			$row = $result->fetch_array(MYSQLI_ASSOC);
+			$user_id = $row['id'];
+			$old_password = $row['user_password'];
+
+			$sql = "update ".self::USER." set user_name = '$name', user_contact_number = '$contact', user_address_line_1='$addressline1', user_address_line_2='$addressline2', user_area='$area', user_town='$town', user_state='$state', user_pin_code='$pincode', user_country='$country' where id = $user_id;";
+
 			$result = self::$mysqli->query($sql);
 			
-			if(self::$mysqli->affected_rows == 1){
-				return true;
+			if($result){
+
+				if( $old_pwd != '' && $old_pwd != null && $new_pwd != '' && $new_pwd != null ){
+					if( md5($old_pwd) != $old_password ){
+						return json_encode(array("status"=>"failed", "message"=>"Old Password is incorrect."));
+					}
+
+					$sql = "update ".self::USER." set user_password='".md5($new_pwd)."' where id=$user_id;";
+					$result = self::$mysqli->query($sql);
+
+					if(!$result){
+						return json_encode(array("status"=>"failed", "message"=>"1. Sorry, some error occured. Your password was not changed. Please try again.".self::$mysqli->error));
+					}
+				}
+
+				return json_encode(array("status"=>"success", "message"=>""));
+		
 			}
-			return false;
+
+			return json_encode(array("status"=>"failed", "message"=>"3. Sorry, some error occured. Your account details were not updated. Please try again."));
 		}
 
 		function addAddressToUser($user_email, $addressline1, $addressline2, $area, $town, $pincode, $state, $country){
@@ -1076,6 +1100,8 @@ class DbConnection {
 		$sql = '';
 		$user_id = null;
 
+		$last_insert_id = 0;
+
 		$sql = "select id from ".self::USER." where user_email='$user';";
 		$result = self::$mysqli->query($sql);
 
@@ -1104,8 +1130,6 @@ class DbConnection {
 			//Insert into 'ORDER' table
 				$sql = "insert into `".self::ORDER."` (`user_id`, `order_created_at`, `order_status`) values($user_id, NOW(), 'pending');";
 				$result = self::$mysqli->query($sql);
-
-				$last_insert_id = 0;
 				
 				if(!$result){
 					return json_encode(array("status"=>"failed", "message"=>"C1. Could not place your order. Please try again."));
@@ -1174,7 +1198,7 @@ class DbConnection {
 					return json_encode(array("status"=>"failed", "message"=>"C7. Could not place your order. Please try again. ".self::$mysqli->error));
 				}
 
-			return json_encode(array("status"=>"success", "message"=>"Thank you for purchasing from R.R. Sales Corporation. <br/>You can see your order details in your profile."));
+			return json_encode(array("status"=>"success", "message"=>"Thank you for purchasing from R.R. Sales Corporation. <br/>You can see your order details in your profile.", "data"=>$last_insert_id));
 			
 		}
 		else if($order_from == "product"){
@@ -1229,12 +1253,112 @@ class DbConnection {
 				return json_encode(array("status"=>"failed", "message"=>"P3. Could not place your order. Please try again."));
 			}
 
-			return json_encode(array("status"=>"success", "message"=>"Thank you for purchasing from R.R. Sales Corporation. You can see your order details in your profile."));
+			return json_encode(array("status"=>"success", "message"=>"Thank you for purchasing from R.R. Sales Corporation. <br/>You can see your order details in your profile.", "data"=>$last_insert_id));
 
 		}
 		
 	}
 
+	function sendOrderInvoiceMail($email, $order_id){
+		require_once('./email_format.php');
+
+		$sql = "select o.*, od.* from `".self::ORDER."` o inner join `".self::ORDER_DETAILS."` od on o.`id`=od.`order_id` where o.`id`=$order_id;";
+		$result = self::$mysqli->query($sql);
+
+		if(!$result){
+			return json_encode(array("status"=>"failed", "message"=>"Your order has been placed but we were not able to email the invoice. Please contact us if you have not recieved the invoice on your registered email id."));
+		}
+
+		$row = $result->fetch_array(MYSQLI_ASSOC);
+		$order_date = $row['order_created_at'];
+		$total_amount = $row['order_total_amount'];
+		$transaction_id = $row['order_transaction_id'];
+
+		$subject = "Order Invoice";
+
+		$content = "<p style='color: #333399;'>Thank you for purchasing from R.R. Sales Corporation </p> <br/>";
+		$content .= "<table>";
+		$content .= "<tbody>";
+		$content .= "<tr>";
+		$content .= "<td> <b>Order/Transaction ID</b> </td>";
+		$content .= "<td>".$transaction_id."</td>";
+		$content .= "</tr>";
+		$content .= "<tr>";
+		$content .= "<td> <b>Order Date</b> </td>";
+		$content .= "<td>".$order_date."</td>";
+		$content .= "</tr>";
+		$content .= "</tbody>";
+		$content .= "</table>";
+
+		$content .= "<br/><br/>";
+		$content .= "<table cellpadding='20px' cellspacing='0px' style='border: 1px solid #000;'>";
+		$content .= "<thead>";
+		$content .= "<tr style='border: 1px solid #000;'>";
+		$content .= "<th style='border: 1px solid #000;'>Product ID</th>";
+		$content .= "<th style='border: 1px solid #000;'>Product name</th>";
+		$content .= "<th style='border: 1px solid #000;'>Quantity</th>";
+		$content .= "<th style='border: 1px solid #000;'>Total Cost</th>";
+		// $content .= "<th style='border: 1px solid #000;'></th>";
+		$content .= "</tr>";
+		$content .= "</thead>";
+
+		$content .= "<tbody>";
+
+		// For 1st record.
+			$sql_1 = "select product_id, product_name from ".self::PRODUCT." where id=".$row['product_id'].";";
+			$result_1 = self::$mysqli->query($sql_1);
+			$row_1 = $result_1->fetch_array(MYSQLI_ASSOC);
+			$product_id = $row_1['product_id'];
+			$product_name = $row_1['product_name'];
+
+			$content .= "<tr style='border: 1px solid #000;'>";
+			$content .= "<td style='border: 1px solid #000;'>".$product_id."</td>";
+			$content .= "<td style='border: 1px solid #000;'>".$product_name."</td>";
+			$content .= "<td style='border: 1px solid #000;'>".$row['order_details_product_quantity']."</td>";
+			$content .= "<td style='border: 1px solid #000;'>".((float)$row['order_details_product_quantity'] * (float)$row['order_details_product_rate'])."</td>";
+			$content .= "</tr>";
+
+		while($row = $result->fetch_array(MYSQLI_ASSOC)){
+
+			$sql_1 = "select product_id, product_name from ".self::PRODUCT." where id=".$row['product_id'].";";
+			$result_1 = self::$mysqli->query($sql_1);
+			$row_1 = $result_1->fetch_array(MYSQLI_ASSOC);
+			$product_id = $row_1['product_id'];
+			$product_name = $row_1['product_name'];
+
+			$content .= "<tr style='border: 1px solid #000;'>";
+			$content .= "<td style='border: 1px solid #000;'>".$product_id."</td>";
+			$content .= "<td style='border: 1px solid #000;'>".$product_name."</td>";
+			$content .= "<td style='border: 1px solid #000;'>".$row['order_details_product_quantity']."</td>";
+			$content .= "<td style='border: 1px solid #000;'>".((float)$row['order_details_product_quantity'] * (float)$row['order_details_product_rate'])."</td>";
+			$content .= "</tr>";
+		}
+
+		$content .= "<tr> <td colspan='2'> </td>";
+		$content .= "<td> Order Total </td>";
+		$content .= "<td> ".$total_amount." </td> </tr>";
+		
+		$content .= "</tbody>";
+
+		$content .= "</table>";
+
+		// return json_encode(array("status"=>"success", "message"=>$content));
+
+		$content .= "Best, <br/>";
+		$content .= "R.R. Sales Corporation,<br/> Vadodara,<br/> Gujarat";
+					
+		$mail_reply = json_decode(sendMail($email, $subject, $content));
+
+		if($mail_reply == "true"){
+			return json_encode(array("status"=>"success", "message"=>"Please check your mail for the order invoice."));
+		}
+		else{
+			return json_encode(array("status"=>"failed", "message"=>"Your order has been placed but we were not able to email the invoice. Please contact us if you have not recieved the invoice on your registered email id."));
+		}
+
+		print_r($mail_reply);
+		return $mail_reply;
+	}
 
 	function fetchOrderHistory($type, $user_email){
 		if($type == "user"){

@@ -75,7 +75,7 @@
 			<div class="row">
 				<h3> <b> <span id="user-name"></span>&apos;s </b> profile <sup><a href="#!" id="edit-profile-link"> <span class="fa fa-edit"></span> </a></sup> </h3>
 				
-				<div class="col-lg-4 col-md-5 col-sm-5 col-xs-12">
+				<div class="col-lg-5 col-md-6 col-sm-6 col-xs-12">
 					<table class="table" id="disp-profile-data">
 						<tbody>
 							<tr>
@@ -96,27 +96,77 @@
 					<form role="form" id="edit-profile-data-form" hidden>
 						<table class="table" id="edit-profile-data">
 							<tbody>
+								
 								<tr class="form-group">
-									<td> <label for="profile-name">Name : </label> </td>
-									<td> <input type="text" class="form-control" id="profile-name"> </td>
+									<td colspan="2" id="edit-error-msg" style="color: red; font-style: italic;	"> <!-- validation error msgs --> </td>
+								</tr>								
+								<tr class="form-group">
+									<td> <label for="edit-name">Name : </label> </td>
+									<td> <input type="text" class="form-control" id="edit-name" required> </td>
 								</tr>
 								<tr class="form-group">
-									<td> <label for="profile-contact">Contact : </label> </td>
-									<td> <input type="text" class="form-control" id="profile-contact"> </td>
+									<td> <label for="edit-contact">Contact : </label> </td>
+									<td> <input type="text" class="form-control" id="edit-contact" required> </td>
 								</tr>
 								<tr class="form-group">
-									<td> <label for="profile-address">Address : </label> </td>
-									<td> <input type="text" class="form-control" id="profile-address"> </td>
+									<td> <label for="edit-address-line1">Address line 1 : </label> </td>
+									<td> <input type="text" class="form-control" id="edit-address-line1" required> </td>
 								</tr>
+								<tr class="form-group">
+									<td> <label for="edit-address-line2">Address line 2 : </label> </td>
+									<td> <input type="text" class="form-control" id="edit-address-line2"> </td>
+								</tr>
+								<tr class="form-group">
+									<td> <label for="edit-area">Area : </label> </td>
+									<td> <input type="text" class="form-control" id="edit-area" required> </td>
+								</tr>
+								<tr class="form-group">
+									<td> <label for="edit-town">Town : </label> </td>
+									<td> <input type="text" class="form-control" id="edit-town" required> </td>
+								</tr>
+								<tr class="form-group">
+									<td> <label for="edit-state">State : </label> </td>
+									<td> <input type="text" class="form-control" id="edit-state" required> </td>
+								</tr>
+								<tr class="form-group">
+									<td> <label for="edit-pincode">Pincode : </label> </td>
+									<td> <input type="text" class="form-control" id="edit-pincode" required> </td>
+								</tr>
+								<tr class="form-group">
+									<td> <label for="edit-address-country">Country : </label> </td>
+									<td> <input type="text" class="form-control" id="edit-country" required> </td>
+								</tr>
+
+								<tr class="form-group">
+									<td colspan="2"> <hr/> </td>
+								</tr>
+
+								<tr class="form-group">
+									<td colspan="2"> <i>Change Password</i> </td>
+								</tr>
+
+								<tr class="form-group">
+									<td> <label for="edit-old-password">Old password : </label> </td>
+									<td> <input type="password" class="form-control" id="edit-old-password"> </td>
+								</tr>
+								<tr class="form-group">
+									<td> <label for="edit-new-password">New password : </label> </td>
+									<td> <input type="password" class="form-control" id="edit-new-password"> </td>
+								</tr>
+
+								<tr class="form-group">
+									<td colspan="2"> <br/><center> <input type="submit" id="edit-profile-btn" class="btn btn-default" val="Edit profile" style="width: 50%;"> </center> </td>
+								</tr>
+
 							</tbody>
 						</table>
 					</form>
 
 				</div>
 
-				<div class="col-lg-1 col-md-1"></div>
+				<div class="col-lg-1"></div>
 
-				<div class="col-lg-4 col-md-5 col-sm-5 col-xs-12" id="profile-extra-info" hidden>
+				<div class="col-lg-5 col-md-6 col-sm-6 col-xs-12" id="profile-extra-info" hidden>
 					<table class="table">
 						<tbody>
 							<!-- Any extra information will be displayed here -->
@@ -160,7 +210,7 @@
 
 		</div>
 
-		<div class="col-lg-1 col-md-1 col-sm-1"></div>
+		<div class="col-lg-1"></div>
 
 	</div>
 
@@ -207,6 +257,10 @@ $(document).ready(function(){
 
 	$("#edit-profile-link").on("click", function(){
 		editProfile(user);
+	});
+
+	$("#edit-profile-data-form").on("submit", function(e){
+		updateUserDetails(user, e);
 	});
 
 });

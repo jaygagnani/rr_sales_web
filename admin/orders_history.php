@@ -87,16 +87,18 @@
 <!-- Scripts Section -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 <script type="text/javascript" src="./js/materialize.js"></script>
-<script type="text/javascript" src="../js/search_keyword.js"></script>
+<!-- <script type="text/javascript" src="../js/search_keyword.js"></script> -->
 <script type="text/javascript" src="./js/common_js.js"></script>
 
 <script type="text/javascript">
 
 $(document).ready(function(){
 
-	fetchOrderHistory(null);
+	// $('.collapsible').collapsible({
+	// 	accordian: true
+	// });
 
-	$('.collapsible').collapsible();
+	fetchOrderHistory(null);
 
 });
 
