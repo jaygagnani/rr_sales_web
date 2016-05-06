@@ -3,7 +3,7 @@ function searchProducts(searchParam){
 		//searchParam = $.trim(searchParam);
 		if(searchParam == / ^\s+ /){
 			//Do nothing
-			alert(1);
+			
 		}
 		else if(searchParam == '' || searchParam == null || searchParam === undefined){
 			fetchCategories();

@@ -1468,6 +1468,31 @@ class DbConnection {
 	}
 
 	// End Order Functions
+
+	// Mail Functions
+
+	function sendContactMail($name, $email_from, $contact, $msg){
+		require_once('./contact_email_format.php');
+
+		$subject = "Feedback / Enquiry";
+
+		$content = "<b> Name : </b>".$name."<br/>";
+		$content .= "<b> Contact : </b>".$contact."<br/>";
+		$content .= "<b> Message : </b>".$msg."<br/>";
+				
+		$mail_reply = json_decode(sendMail($email_from, $subject, $content));
+
+		if($mail_reply == "true"){
+			return json_encode(array("status"=>"success", "message"=>"Your mail was successfully mailed. We'll reply you as soon as possible."));
+		}
+		else{
+			return json_encode(array("status"=>"failed", "message"=>"Your query/feedback was not mail. Try again."));
+		}
+
+		return json_encode(array("status"=>"failed", "message"=>"Your query/feedback was not mail. Try again."));
+	}
+
+	// End Mail Functions
 }
 
 DbConnection::init();

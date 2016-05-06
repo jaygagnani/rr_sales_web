@@ -606,8 +606,6 @@ function getFilters(){
 				search_keyword = search_keyword.replace(/[\W\D\S^//]*/, "");
 			}
 
-			alert(search_keyword);
-
 			filterSearch(vehicle_name, wheel_2, wheel_3, search_keyword);
 		}
 	});
@@ -1461,6 +1459,89 @@ function updateUserDetails(user, event){
 }
 
 // ENDS User Profile Functions
+
+// Contact Functions
+
+function sendQueryMail(){
+	var name = $("#msg-name");
+	var email = $("#msg-email");
+	var contact = $("#msg-contact");
+	var msg = $("#msg-msg");
+
+	var error_msg_dom = $("#msg-error");
+
+	var pattern = /^[a-zA-Z\s]+$/;
+
+	if($.trim(name.val()) == '' ||  $.trim(name.val()) == null ){
+		error_msg_dom.html("Name cannot be blank.");
+
+		return false;
+	}
+	else if(! pattern.test(name.val()) ){
+		error_msg_dom.html("Name should contain only letters.");
+
+		return false;
+	}
+
+	if($.trim(email.val()) == '' ||  $.trim(email.val()) == null ){
+		error_msg_dom.html("Email ID cannot be blank.");
+
+		return false;
+	}
+
+	pattern = /^[0-9]+$/;
+	if($.trim(contact.val()) == '' ||  $.trim(contact.val()) == null ){
+		error_msg_dom.html("Contact number cannot be blank.");
+
+		return false;
+	}
+	else if(! pattern.test(contact.val()) ){
+		error_msg_dom.html("Contact number should contain only digits.");
+
+		return false;
+	}
+	else if(contact.val().length < 10){
+		error_msg_dom.html("Contact number should have 10 digits.");
+
+		return false;
+	}
+
+	pattern = /^[\w\d\s\n,.$@&*\(\)\+\-\=]+$/;
+	if($.trim(msg.val()) == '' ||  $.trim(msg.val()) == null ){
+		error_msg_dom.html("Message cannot be blank.");
+
+		return false;
+	}
+	else if(! pattern.test(msg.val()) ){
+		error_msg_dom.html("Message can have only alphanumeric characters and some symbols [, . $ @ & * ( ) + - =].");
+
+		return false;
+	}
+
+	error_msg_dom.html('');
+
+	$.getJSON("../server/send_contact_mail.php",
+		{
+			"name": $.trim(name.val()),
+			"email": $.trim(email.val()),
+			"contact": $.trim(contact.val()),
+			"msg": $.trim(msg.val())
+		},
+		function(data, status){
+			error_msg_dom.html(data.message);
+			
+			if(data.status == "success"){
+				error_msg_dom.css("color", "#333399");
+				error_msg_dom.css("font-style", "bold");
+			}
+
+		}
+	);
+
+}
+
+// ENDS Contact Functions
+
 
 // Helper Methods
 

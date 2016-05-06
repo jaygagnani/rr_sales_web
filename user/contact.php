@@ -22,7 +22,6 @@
 
 	<style type="text/css">
 
-		
 	</style>
 	
 </head>
@@ -90,18 +89,22 @@
 
 						<h3> <b> OR MESSAGE US HERE <br/> <span style="font-size: 8pt;"> and we will get back to you shortly </span> </b> </h3>
 
-						<form role="form">
+						<div id="msg-error" style="color: red; font-style: italic;"> <!-- any error message would be here --> </div>
+
+						<br/>
+
+						<form role="form" id="contact-form">
 							<div class="form-group">
-								<input type="text" class="form-control" id="msg-name" placeholder="Name">
+								<input type="text" class="form-control" id="msg-name" placeholder="Name" required>
 							</div>
 							<div class="form-group">
-								<input type="email" class="form-control" id="msg-email" placeholder="Email">
+								<input type="email" class="form-control" id="msg-email" placeholder="Email" required>
 							</div>
 							<div class="form-group">
-								<input type="text" class="form-control" id="msg-contact" placeholder="Phone number">
+								<input type="text" class="form-control" id="msg-contact" placeholder="Phone number" required>
 							</div>
 							<div class="form-group">
-								<textarea type="text" class="form-control" id="msg-msg" placeholder="Your inquiry or message" rows=10></textarea>
+								<textarea type="text" class="form-control" id="msg-msg" placeholder="Your inquiry or message" rows=10 required></textarea>
 							</div>
 							<div class="form-group">
 								<input type="submit" class="btn btn-default" value="Send" style="background-color: #333399; color: #fff; width: 150px;">
@@ -130,6 +133,15 @@
 <script src="./js/common_js.js" type="text/javascript"></script>
 
 <script type="text/javascript">
+
+$(document).ready(function(){
+
+	$("#contact-form").on("submit", function(event){
+		event.preventDefault();
+		sendQueryMail();
+	});
+
+});
 
 </script>
 
